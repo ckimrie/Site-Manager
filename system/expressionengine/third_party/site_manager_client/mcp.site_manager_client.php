@@ -18,6 +18,8 @@ class Site_manager_client_mcp
 		if(!property_exists($this->EE, "requirejs")){
 			show_error("The Site Manager module needs the <a href='https://github.com/ckimrie/RequireJS-for-EE'>RequireJS-for-EE</a> extension to be installed in order to function correctly.", 500, "Module Required");
 		}
+
+		$this->EE->load->library("base");
 	}
 
 
