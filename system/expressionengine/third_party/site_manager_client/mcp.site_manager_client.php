@@ -22,6 +22,9 @@ class Site_manager_client_mcp
 
 		//What resources do we need?
 		Requirejs::load("css!third_party/site_manager_client/css/site_manager_client.css");
+
+		//PHP Resources
+		$this->EE->load->library("base");
 	}
 
 
