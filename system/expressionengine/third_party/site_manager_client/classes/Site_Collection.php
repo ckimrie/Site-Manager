@@ -6,16 +6,61 @@
 */
 class Site_Collection implements Iterator
 {
+	private $EE;
+
+	//Config
+	var $db_name = "site_manager_sites";
+
+
+	//Runtime vars
+	private $_index = 0;
+	private $_sites = array();
+	private $_key_map = array();
+	private $_db_cache = array();
 	
 	function __construct()
 	{
-		# code...
+		$this->EE =& get_instance();
 	}
 
 
-	public function current ( ) {}
-	public function key ( ) {}
-	public function next ( ) {}
-	public function rewind ( ) {}
-	public function valid ( ) {}
+	public function add($id, $db_row = FALSE)
+	{	
+		try {
+			$s = new Site($id, $db_row);	
+		} catch (Exception $e) {
+			show_error($e->getMessage());
+		}
+
+		//Add to local collection
+		$this->_sites[] = $s;
+
+		//Update the keymap
+		$_key_map[$id] = count($this->_sites) -1;
+	}
+
+
+
+	/**
+	 * Iterator Methods
+	 */
+
+	public function current ( ) {
+		return $this->_sites[$this->_index];
+	}
+	public function key ( ) {
+		return $this->_index;
+	}
+	public function next ( ) {
+		$this->_index++;
+	}
+	public function rewind ( ) {
+		$this->_index = 0;
+	}
+	public function valid ( ) {
+		return isset($this->_sites[$this->_index]);
+	}
+
+
+	
 }

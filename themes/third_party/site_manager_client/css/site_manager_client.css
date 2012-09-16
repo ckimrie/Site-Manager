@@ -1,0 +1,11 @@
+
+.sm-site {
+	float: left;
+	margin: 0 10px 10px;
+	width: 120px;
+	height: 200px;
+	background-color: #eee;
+	background-color: rgba(0,0,0,0.2);
+	border: 1px solid #ddd;
+	border: 1px solid rgba(0,0,0,0.3);
+}

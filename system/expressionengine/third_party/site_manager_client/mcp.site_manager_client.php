@@ -24,7 +24,7 @@ class Site_manager_client_mcp
 		Requirejs::load("css!third_party/site_manager_client/css/site_manager_client.css");
 
 		//PHP Resources
-		$this->EE->load->library("base");
+		$this->EE->load->model("site_data");
 	}
 
 
@@ -34,8 +34,8 @@ class Site_manager_client_mcp
 		$this->EE->cp->set_variable('cp_page_title', "Site Manager");
 		
 
-		
+		$data['sites'] = $this->EE->site_data->getAll();
 
-		return $this->EE->load->view("pages/index/index", array(), TRUE);
+		return $this->EE->load->view("pages/index/index", $data, TRUE);
 	}
 }
