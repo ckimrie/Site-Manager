@@ -17,15 +17,21 @@ class Site_manager_server_mcp
 
 		//PHP Resources
 		$this->EE->load->model("local_data");
+
+		//CSS Resources
+		$this->EE->cp->add_to_head("<link href='".URL_THIRD_THEMES."site_manager_server/css/site_manager_server.css' rel='stylesheet'/>");
 	}
 
 
 
 	public function index()
 	{
-		$this->EE->cp->set_variable('cp_page_title', "Site Manager");
-		
+		$this->EE->cp->set_variable('cp_page_title', "Site Manager Server");
+	
 
+		$data = array();
+		$data['setup_payload'] = $this->EE->local_data->get_setup_payload();
+		
 		return $this->EE->load->view("pages/index/index", $data, TRUE);
 	}
 }

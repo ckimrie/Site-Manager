@@ -1,42 +1,4 @@
 
-/**
- * Index
- * 
- */
-.btn-bar {
-	margin-bottom:15px;
-	padding:15px 10px;
-	background-color: #eee;
-	background-color: rgba(255,255,255,0.4);
-	border: 1px solid #ddd;
-	border-color: rgba(0,0,0,0.1);
-}
-.btn-bar a {
-	cursor: pointer;
-}
-.sm-site {
-	float: left;
-	margin: 0 10px 10px;
-	width: 120px;
-	height: 200px;
-	background-color: #eee;
-	background-color: rgba(0,0,0,0.2);
-	border: 1px solid #ddd;
-	border: 1px solid rgba(0,0,0,0.3);
-}
-
-
-
-
-
-/**
- * Add Site
- * 
- */
-p.error {
-	color:red;
-	font-weight: bold;
-}
 .payload_settings_wrapper {
 	float: right;
 	margin: 0px 0 20px 20px;

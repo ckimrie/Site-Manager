@@ -29,12 +29,12 @@ class Site_data extends CI_Model
 		
 
 		//Fetch installed sites
-		$this->getAll();
+		$this->get_all();
 	}
 
 
 
-	public function getAll()
+	public function get_all()
 	{
 		//Fetch installed sites
 		$q = $this->EE->db->get("site_manager_sites")->result();
@@ -53,5 +53,15 @@ class Site_data extends CI_Model
 	}
 
 
+	public function verify_settings_payload($str='')
+	{
+		$a = $this->decode_settings_payload($str);
+		return is_array($a) && count($a) > 0;
+	}
+
+	public function decode_settings_payload($str='')
+	{
+		return @unserialize(base64_decode($str));
+	}
 
 }
