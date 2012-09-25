@@ -42,7 +42,7 @@ class Site extends Remote_Object
 
 	public function name()
 	{
-		return $this->_db_object->name;
+		return $this->_db_object->site_name;
 	}
 
 

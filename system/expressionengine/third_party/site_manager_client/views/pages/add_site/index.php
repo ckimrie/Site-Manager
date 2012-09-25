@@ -8,6 +8,6 @@
 		</div>
 	</form>
 </div>
-<h1>Add Site</h1>
+<h1 class="mainHeading">Site Configuration</h1>
 <p>In order to add a site you will need to install the "Site Manager Server" module in each site you wish to install remotely.</p>
 <p>Once installed, the module will provide you with some encoded site settings data that you will need to copy and paste into the textbox on the right.</p>

@@ -33,3 +33,16 @@
 #payload_settings { 
 	border-width: 1px;
 }
+
+
+.mainHeading {
+	margin: 5px 0 22px 0;
+	font-weight: 100;
+	font-size: 2.2em;
+	font-family: Helvetica Light, Helvetica, sans-serif;
+}
+
+#mainContent .pageContents p{
+	font-size: 1.1em;
+	font-family: Helvetica Neue, Helvetica, sans-serif;
+}

@@ -40,6 +40,7 @@ class Local_data extends CI_model
 			"site_id" 		=> $this->_site_id,
 			"public_key" 	=> $this->_public_key,
 			"private_key" 	=> $this->_private_key,
+			"cp_url"		=> $this->_site["cp_url"],
 			"site_name" 	=> $this->_site['site_name'],
 			"base_url" 		=> $this->_site['base_url'],
 			"index_page" 	=> $this->_site['index_page'],
@@ -58,8 +59,8 @@ class Local_data extends CI_model
 	private function _init()
 	{
 		//Fetch module specific data
-		$this->site_id = $this->EE->config->item("site_id");
-		$q = $this->_fetch_site_db_data($this->site_id);
+		$this->_site_id = $this->EE->config->item("site_id");
+		$q = $this->_fetch_site_db_data($this->_site_id);
 		$this->_private_key = $q->private_key;
 		$this->_public_key = $q->public_key;
 		$this->_settings = $q->settings;
@@ -67,6 +68,7 @@ class Local_data extends CI_model
 		//Site data
 		$this->_site = array(
 			"site_name" => $this->EE->config->item("site_name"),
+			"cp_url"	=> $this->EE->config->item("cp_url"),
 			"base_url" => $this->EE->config->item("base_url"),
 			"cp_url"  => $this->EE->config->item("cp_url"),
 			"index_page" => $this->EE->config->item("index_page"),
@@ -78,7 +80,7 @@ class Local_data extends CI_model
 
 	private function _fetch_site_db_data($site_id)
 	{
-		$q = $this->EE->db->get_where($this->_db_name, array("site_id" => $this->site_id));
+		$q = $this->EE->db->get_where($this->_db_name, array("site_id" => $site_id));
 
 		if($q->num_rows() == 0) {
 			$data = array(
@@ -87,6 +89,7 @@ class Local_data extends CI_model
 				"private_key" 	=> $this->_generate_key(),
 				"settings"		=> $this->_prep_settings_for_db(array())
 			);
+			
 			$this->EE->db->insert($this->_db_name, $data);
 			return $this->_fetch_site_db_data($site_id);
 		}
@@ -108,7 +111,7 @@ class Local_data extends CI_model
 	private function _generate_key()
 	{
 		$c =& CI_Controller::get_instance();
-		return $c->security->xss_hash();
+		return md5(rand(0,9999).$c->security->xss_hash().rand(0,9999));
 	}
 
 

@@ -8,6 +8,10 @@ class Site_data extends CI_Model
 {
 	var $EE;
 
+	//Config
+	private $_db_name = "site_manager_sites";
+
+	//Runtime Vars
 	private $_sites;
 
 	function __construct()
@@ -34,10 +38,41 @@ class Site_data extends CI_Model
 
 
 
+	public function newSite($post=array())
+	{
+		$c =& CI_Controller::get_instance();
+
+		//Sanitize everything first
+		foreach ($post as $key => $row) {
+			$post[$key] = $c->security->xss_clean($row);
+		}
+
+	
+		$site_name = $post['site_name'];
+		$base_url = $post['base_url'];
+		unset($post['site_name']);
+		unset($post['base_url']);
+
+		$data = array(
+			"site_name" => $site_name,
+			"base_url" => $base_url,
+			"settings" 	=> $this->encode_settings_payload($post),
+			"added_by"	=> $c->session->userdata("member_id"),
+			"date_added" => $this->EE->localize->now,
+		);
+
+		$this->EE->db->insert($this->_db_name, $data);
+	
+		
+		return $this->EE->db->insert_id();
+	}
+
+
+
 	public function get_all()
 	{
 		//Fetch installed sites
-		$q = $this->EE->db->get("site_manager_sites")->result();
+		$q = $this->EE->db->get($this->_db_name)->result();
 
 		$sites = new Site_Collection();
 		
@@ -62,6 +97,11 @@ class Site_data extends CI_Model
 	public function decode_settings_payload($str='')
 	{
 		return @unserialize(base64_decode($str));
+	}
+
+	public function encode_settings_payload($data=array())
+	{
+		return base64_encode(serialize($data));
 	}
 
 }
