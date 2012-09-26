@@ -6,7 +6,7 @@
 */
 class Site extends Remote_Object
 {
-	var $EE;
+	var $site_data;
 
 
 	//Runtime vars
@@ -19,7 +19,7 @@ class Site extends Remote_Object
 
 	function __construct($id, $db_object=FALSE)
 	{
-		$this->EE =& get_instance();
+		parent::__construct();
 
 
 		if(!$db_object) {
@@ -46,6 +46,30 @@ class Site extends Remote_Object
 	}
 
 
+	public function base_url()
+	{
+		return $this->_db_object->base_url;
+	}
+
+	public function cp_url()
+	{
+		return $this->setting('cp_url');
+	}
+
+
+	public function setting($key='')
+	{
+		return isset($this->_db_object->settings[$key]) ? $this->_db_object->settings[$key] : FALSE;
+	}
+
+
+
+	public function thumbnail($width=120)
+	{
+		return "http://zenithwebtechnologies.com.au/thumbnail01.php?type=png&width=".$width."&imageSpecs=absolute&url=".$this->base_url();
+	}
+
+
 
 
 	/**
@@ -55,8 +79,16 @@ class Site extends Remote_Object
 	 */
 	private function _init($db_object)
 	{
+		$this->site_data = Site_data::get_instance();
+
+
 		$this->_db_object = $db_object;
 		$this->_id = $db_object->id;
+
+		//Unpackage settings
+		$this->_db_object->settings = $this->site_data->decode_settings_payload($this->_db_object->settings);
+
+		$this->api_url = $this->base_url().$this->setting("index_page")."?ACT=".$this->setting("action_id");
 	}
 
 	/**
@@ -88,4 +120,6 @@ class Site extends Remote_Object
 		return $row;
 
 	}
+
+
 }

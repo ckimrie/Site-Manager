@@ -36,7 +36,17 @@ class Site_Collection implements Iterator
 		$this->_sites[] = $s;
 
 		//Update the keymap
-		$_key_map[$id] = count($this->_sites) -1;
+		$this->_key_map[$id] = count($this->_sites) -1;
+	}
+
+
+
+	public function get($site_id='')
+	{
+		//Has this ID been cached yet?
+		if(!isset($this->_key_map[$site_id])) return FALSE;
+
+		return $this->_sites[$this->_key_map[$site_id]];
 	}
 
 

@@ -13,4 +13,10 @@ class Site_manager_server
 	{
 		$this->EE =& get_instance();
 	}
+
+
+	public function request()
+	{
+		echo "Hello from site B!";
+	}
 }

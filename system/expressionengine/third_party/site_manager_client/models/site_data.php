@@ -14,6 +14,9 @@ class Site_data extends CI_Model
 	//Runtime Vars
 	private $_sites;
 
+	//Static
+	static private $_instance;
+
 	function __construct()
 	{
 		$this->EE =& get_instance();
@@ -30,10 +33,17 @@ class Site_data extends CI_Model
 	public function init()
 	{
 		//Initialise
-		
+		Site_data::$_instance =& $this; 
 
 		//Fetch installed sites
 		$this->get_all();
+	}
+
+
+
+	static function get_instance()
+	{
+		return Site_data::$_instance;
 	}
 
 
@@ -85,6 +95,23 @@ class Site_data extends CI_Model
 
 
 		return $this->_sites;
+	}
+
+
+
+	public function get($site_id)
+	{
+		$site = $this->_sites->get($site_id);
+		if($site) return $site;
+
+		//Fetch installed sites
+		$q = $this->EE->db->get_where($this->_db_name, array("id" => $site_id))->result();
+		
+		foreach ($q as $key => $row) {
+			$this->_sites->add($row->id, $row);
+		}
+
+		return $this->_sites->get($site_id);
 	}
 
 

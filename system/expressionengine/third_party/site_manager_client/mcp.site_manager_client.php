@@ -7,6 +7,7 @@
 class Site_manager_client_mcp
 {
 	var $EE;
+	var $ajax;
 	var $return_data;
 
 	var $module_label = "Site Manager";
@@ -16,6 +17,9 @@ class Site_manager_client_mcp
 	function __construct()
 	{
 		$this->EE =& get_instance();
+
+		$this->EE->load->file(PATH_THIRD."site_manager_client/ajax.site_manager_client.php");
+		$this->ajax = new Site_manager_client_ajax();
 
 		//Ensure RequireJS is installed
 		if(!property_exists($this->EE, "requirejs")){
@@ -31,12 +35,17 @@ class Site_manager_client_mcp
 		//PHP Resources
 		$this->EE->load->model("site_data");
 		$this->EE->load->helper("navigation");
+
+		$this->EE->load->vars(array("js_api" => methodUrl("ajax")));
 	}
 
 
 
 	public function index()
 	{
+		Requirejs::load("third_party/site_manager_client/js/index");
+
+
 		$data['sites'] = $this->EE->site_data->get_all();
 		$data['add_url'] = methodUrl("add_site");
 
@@ -118,6 +127,34 @@ class Site_manager_client_mcp
 
 
 
+	/**
+	 * Ajax Endpoint
+	 */
+	public function ajax()
+	{
+		$method = $this->EE->input->get("js_method");
+
+		if(!method_exists($this->ajax, $method)) show_404();
+
+		$data = $this->ajax->$method();
+
+		$this->EE->load->library('javascript');
+		$this->EE->output->set_status_header($this->ajax->response_code);
+		if ($this->EE->config->item('send_headers') == 'y')
+		{
+			@header('Content-Type: application/json');
+		
+		}
+		
+		exit($this->EE->javascript->generate_json($data, TRUE));
+	}
+
+
+
+
+	/**
+	 * Validation Method
+	 */
 	public function _valid_settings($str='')
 	{
 		return $this->EE->site_data->verify_settings_payload($str);
