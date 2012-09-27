@@ -20,7 +20,29 @@
 					<li>Total Time: <span class="total_time">--</span></li>
 				</ul>
 			</div>
-			<p class="meta"><a href="<?php echo $site->base_url() ?>" target="_blank"><?php echo $site->base_url() ?></a> &nbsp; &nbsp; &nbsp; &nbsp; <a href="<?php echo $site->cp_url() ?>" target="_blank">Login to CP</a> &nbsp; &nbsp; &nbsp; &nbsp; EE: <span class="app_version">-</span></p>
+			<p class="meta"><a href="<?php echo $site->base_url() ?>" target="_blank"><?php echo $site->base_url() ?></a> &nbsp; &nbsp; &nbsp; &nbsp; <a href="<?php echo $site->cp_url() ?>" target="_blank">Control Panel</a> &nbsp; &nbsp; &nbsp; &nbsp; EE: <span class="app_version">-</span></p>
+
+
+				<table class="mainTable padTable " border="0" cellpadding="0" cellspacing="0">
+					<thead>
+						<tr>
+							<th width="50%">Setting</th>
+							<th>Value</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ($config as $key => $value) : ?>
+							<tr>
+								<td><?php echo $key ?></td>
+								<td><?php echo $value ?></td>
+							</tr>
+						<?php endforeach ?>
+					</tbody>
+				</table>
+
+
+
+
 
 		</div>
 	</div>

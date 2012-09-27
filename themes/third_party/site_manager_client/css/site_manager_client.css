@@ -219,15 +219,15 @@ p.error {
 	background-color: rgba(255,255,255,0.6);
 	border-right: 1px solid rgba(0,0,0,0.1);
 }
+
+.nav li a:hover {
+	background-color: rgba(0,0,0,0.01)
+}
 .nav li.active a {
 	background: #E7174B;
 	border-right: none;
 	color: white;
 }
-.nav li a:hover {
-	background-color: rgba(0,0,0,0.01)
-}
-
 .site-details {
 	position: relative;
 }

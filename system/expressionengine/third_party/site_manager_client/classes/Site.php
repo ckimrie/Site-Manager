@@ -70,6 +70,17 @@ class Site extends Remote_Object
 
 
 
+	public function config()
+	{
+		$this->new_connection("config");
+
+		$a = $this->curl->execute();
+
+		return json_decode($a, TRUE);
+	}
+
+
+
 	public function thumbnail($width=120)
 	{
 		return "http://zenithwebtechnologies.com.au/thumbnail01.php?type=png&width=".$width."&imageSpecs=absolute&url=".$this->base_url();

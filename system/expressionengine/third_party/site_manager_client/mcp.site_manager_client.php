@@ -144,32 +144,33 @@ class Site_manager_client_mcp
 
 		$data = array();
 		$data['site'] = $this->EE->site_data->get($site_id);
-		$data['navigation'] = array(
-			"site_details" 			=> array(
-										"active"=> TRUE,
-										"label" => "Site Overview",
-										"url" 	=> methodUrl("site_details", array("site_id" => $site_id))
-									),
-			"site_config" 			=> array(
-										"active"=> FALSE,
-										"label" => "Configuration",
-										"url" 	=> methodUrl("site_config", array("site_id" => $site_id))
-									),
-			"site_details_channel" 	=> array(
-										"active"=> FALSE,
-										"label" => "Channels",
-										"url" 	=> methodUrl("site_details_channel", array("site_id" => $site_id))
-									),
-			"site_details_addons" 	=> array(
-										"active"=> FALSE,
-										"label" => "Addons",
-										"url" 	=> methodUrl("site_details_addons", array("site_id" => $site_id))
-									)
-		);
+		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details");
 
 		$this->page_title = $data['site']->name();
 
 		return $this->view("site_details/index", $data);
+	}
+
+
+	public function site_details_config()
+	{
+		$site_id = $this->EE->input->get("site_id");
+		
+		Requirejs::load("third_party/site_manager_client/js/site_details");
+
+
+
+		$data = array();
+		$data['site'] = $this->EE->site_data->get($site_id);
+		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details_config");
+		$data['config'] = $data['site']->config();
+
+		//Sort config
+		ksort($data['config']);
+
+		$this->page_title = $data['site']->name();
+
+		return $this->view("site_details/config", $data);
 	}
 
 
@@ -221,5 +222,34 @@ class Site_manager_client_mcp
 		$data['cp_page_title'] = $this->page_title;
 
 		return $this->EE->load->view("pages/".$name, $data, TRUE);	
+	}
+
+
+
+
+	private function _site_detail_navigation($site_id, $current='')
+	{
+		return array(
+			"site_details" 			=> array(
+										"active"=> $current == "site_details",
+										"label" => "Site Overview",
+										"url" 	=> methodUrl("site_details", array("site_id" => $site_id))
+									),
+			"site_details_config" 	=> array(
+										"active"=> $current == "site_details_config",
+										"label" => "Configuration",
+										"url" 	=> methodUrl("site_details_config", array("site_id" => $site_id))
+									),
+			"site_details_channel" 	=> array(
+										"active"=> $current == "site_details_channel",
+										"label" => "Channels",
+										"url" 	=> methodUrl("site_details_channel", array("site_id" => $site_id))
+									),
+			"site_details_addons" 	=> array(
+										"active"=> $current == "site_details_addons",
+										"label" => "Addons",
+										"url" 	=> methodUrl("site_details_addons", array("site_id" => $site_id))
+									)
+		);
 	}
 }
