@@ -1,9 +1,15 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 
-function methodUrl($method = "") {
+function methodUrl($method = "", $get=array()) {
 	
-	return str_replace("&amp;", "&", BASE . "&C=addons_modules&M=show_module_cp&module=site_manager_client&method=".$method);
+	$str = str_replace("&amp;", "&", BASE . "&C=addons_modules&M=show_module_cp&module=site_manager_client&method=".$method);
+
+	foreach ($get as $key => $value) {
+		$str .= "&".$key."=".urlencode($value);
+	}
+	
+	return $str;
 }
 
 

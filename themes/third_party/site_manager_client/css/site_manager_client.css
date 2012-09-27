@@ -59,6 +59,9 @@
 	font-family: Helvetica Light, Helvetica, sans-serif;
 	border: 1px solid #999;
 }
+#mainContent .sm-site h3 a {
+	color:#555;
+}
 .mainHeading {
 	margin: 5px 0 22px 0;
 	font-weight: 100;
@@ -84,15 +87,18 @@
 	left: 73px;
 }
 
-.sm-site .status.live.active {
+.status.live.active {
 	background-color:#0DD30D;
+	z-index: 20;
 }
-.sm-site .status.connecting.active {
+.status.connecting.active {
 	background-color:yellow;
 	-webkit-animation: connecting 1.5s infinite ease-in-out;
+	z-index: 20;
 }
-.sm-site .status.offline.active {
+.status.offline.active {
 	background-color:red;
+	z-index: 20;
 }
 
 .sm-site a.button {
@@ -187,4 +193,111 @@ p.error {
 }
 #payload_settings { 
 	border-width: 1px;
+}
+
+
+/* Site Details */
+.columns.nav .left {
+	width: 20%;
+}
+.columns.nav .right {
+	width:78%;
+}
+
+.nav ul {
+	list-style: none;
+	margin:0;
+	padding:0;
+}
+.nav ul li{
+	margin-bottom: 1px
+}
+.nav li a{
+	text-decoration: none;
+	display: block;
+	padding: 10px;
+	background-color: rgba(255,255,255,0.6);
+	border-right: 1px solid rgba(0,0,0,0.1);
+}
+.nav li.active a {
+	background: #E7174B;
+	border-right: none;
+	color: white;
+}
+.nav li a:hover {
+	background-color: rgba(0,0,0,0.01)
+}
+
+.site-details {
+	position: relative;
+}
+.site-details h1 {
+	margin-bottom: 10px;
+}
+#mainContent .site-details p.meta {
+	font-size: 0.9em;
+	padding: 0 0 10px 0;
+	border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.statusBlock {
+	position: absolute;
+	top:0;
+	right:0;
+}
+.statusBlock .status {
+	width:20px;
+	height:20px;
+	border-radius:50%;
+	background-color: #555;
+	display: block;
+	position: absolute;
+	z-index: 10;
+	-webkit-transition-property: right, height, width, top, background-color;
+	-webkit-transition-duration: 0.7s;
+	-webkit-transition-timing-function:  ease-in-out;
+}
+
+.statusBlock .status.live {
+	right:60px;
+}
+.statusBlock .status.connecting {
+	right:30px;
+}
+.statusBlock .status.offline {
+	right:0;
+}
+
+.statusBlock.loaded .status.live,
+.statusBlock.loaded .status.connecting,
+.statusBlock.loaded .status.offline {
+	top:1px;
+	right:1px;
+	width:18px;
+	height:18px;
+}
+.statusBlock.loaded .status.live.active,
+.statusBlock.loaded .status.connecting.active,
+.statusBlock.loaded .status.offline.active {
+	top:0px;
+	right:0px;
+	width:20px;
+	height:20px;
+}
+
+.connection-stats {
+	position: absolute;
+	right:0;
+	font-size: 0.9em;
+}
+.connection-stats ul {
+	list-style: none;
+	padding: 0;
+	margin:0;
+}
+.connection-stats ul li {
+	float: left;
+	margin-right:10px;
+	font-style: italic;
+	color:#999;
 }

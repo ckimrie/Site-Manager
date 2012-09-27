@@ -32,11 +32,18 @@ class Site_manager_client_mcp
 		//Requirejs::load("css!third_party/site_manager_client/css/site_manager_client.css");
 		$this->EE->cp->add_to_head("<link href='".URL_THIRD_THEMES."site_manager_client/css/site_manager_client.css' rel='stylesheet'/>");
 
-		//PHP Resources
+
+
+		//PHP Resources & view fragments
 		$this->EE->load->model("site_data");
 		$this->EE->load->helper("navigation");
 
-		$this->EE->load->vars(array("js_api" => methodUrl("ajax")));
+		$data = array();
+		$data['add_url'] = methodUrl("add_site");
+		$this->EE->load->vars(array(
+			"js_api" 		=> methodUrl("ajax"),
+			"navigation"	=> $this->EE->load->view("embeds/navigation-top", $data, TRUE)
+		));
 	}
 
 
@@ -47,7 +54,7 @@ class Site_manager_client_mcp
 
 
 		$data['sites'] = $this->EE->site_data->get_all();
-		$data['add_url'] = methodUrl("add_site");
+		
 
 		return $this->view("index/index", $data);
 	}
@@ -124,6 +131,48 @@ class Site_manager_client_mcp
 
 		redirectToMethod("index");
 	}
+
+
+
+	public function site_details()
+	{
+		$site_id = $this->EE->input->get("site_id");
+		
+		Requirejs::load("third_party/site_manager_client/js/site_details");
+
+
+
+		$data = array();
+		$data['site'] = $this->EE->site_data->get($site_id);
+		$data['navigation'] = array(
+			"site_details" 			=> array(
+										"active"=> TRUE,
+										"label" => "Site Overview",
+										"url" 	=> methodUrl("site_details", array("site_id" => $site_id))
+									),
+			"site_config" 			=> array(
+										"active"=> FALSE,
+										"label" => "Configuration",
+										"url" 	=> methodUrl("site_config", array("site_id" => $site_id))
+									),
+			"site_details_channel" 	=> array(
+										"active"=> FALSE,
+										"label" => "Channels",
+										"url" 	=> methodUrl("site_details_channel", array("site_id" => $site_id))
+									),
+			"site_details_addons" 	=> array(
+										"active"=> FALSE,
+										"label" => "Addons",
+										"url" 	=> methodUrl("site_details_addons", array("site_id" => $site_id))
+									)
+		);
+
+		$this->page_title = $data['site']->name();
+
+		return $this->view("site_details/index", $data);
+	}
+
+
 
 
 

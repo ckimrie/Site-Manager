@@ -57,6 +57,12 @@ class Site extends Remote_Object
 	}
 
 
+	public function local_url()
+	{
+		$this->EE->load->helper("navigation");
+		return methodUrl('site_details')."&site_id=".$this->id();
+	}
+
 	public function setting($key='')
 	{
 		return isset($this->_db_object->settings[$key]) ? $this->_db_object->settings[$key] : FALSE;
