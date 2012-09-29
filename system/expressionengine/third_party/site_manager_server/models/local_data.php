@@ -6,7 +6,8 @@
 */
 class Local_data extends CI_model
 {
-	var $EE;
+	var 	$EE;
+	var 	$site_id; 		//Sent with every API request
 
 	//Config
 	private $_db_name 		= "site_manager_server_config";
@@ -52,6 +53,59 @@ class Local_data extends CI_model
 		return $this->_prep_settings_payload_for_transport(array($payload));
 	}
 
+
+
+
+
+
+	public function channel_data()
+	{
+		$this->EE->load->driver("Channel_data");
+		$fields = $this->EE->channel_data->get_fields();
+		$channels = $this->EE->channel_data->get_channels();
+
+		$data = array();
+
+
+
+		foreach ($channels->result_array() as $key => $channel) {
+			if($channel['site_id'] != $this->site_id) continue;
+
+			$d = array(
+				"channel_id"			=> $channel["channel_id"],
+				"site_id"				=> $channel["site_id"],
+				"channel_name"			=> $channel["channel_name"],
+				"channel_title"			=> $channel["channel_title"],
+				"channel_url"			=> $channel["channel_url"],
+				"total_entries"			=> $channel["total_entries"],
+				"total_comments"		=> $channel["total_comments"],
+				"field_group"			=> $channel['field_group'],
+				"fields"				=> array()
+			);
+
+			foreach ($fields->result_array() as $key2 => $field) {
+				if($field['group_id'] == $channel['field_group']) {
+					$d['fields'][] = array(		
+						"field_id"				=> $field["field_id"],
+						"field_name"			=> $field["field_name"],
+						"field_label"			=> $field["field_label"],
+						"field_type"			=> $field["field_type"]
+					);
+				}
+			}
+
+			$data[] = $d;
+		}
+
+		return $data;
+	}
+
+
+	public function channel_fields()
+	{
+		$this->EE->load->driver("Channel_data");
+		return $this->EE->channel_data->get_fields();
+	}
 
 
 

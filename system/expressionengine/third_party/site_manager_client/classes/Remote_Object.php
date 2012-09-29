@@ -12,6 +12,7 @@ class Remote_Object
 	protected $curl;
 
 	protected $api_url;
+	protected $site_id = 1;
 
 
 	public function __construct()
@@ -58,6 +59,7 @@ class Remote_Object
 		$url = $this->api_url;
 
 		$url .= "&method=".$method;
+		$url .= "&site_id=".$this->site_id;
 
 		foreach ($fragments as $key => $value) {
 			$url .= "&".$key."=".urlencode($value);

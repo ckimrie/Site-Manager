@@ -14,6 +14,16 @@ class Site_manager_server
 	function __construct()
 	{
 		$this->EE =& get_instance();
+
+
+		//TODO
+		//
+		//Validate authentication....
+		
+
+		//Set Site ID
+		$this->EE->load->model("local_data");
+		$this->EE->local_data->site_id = $this->EE->input->get("site_id");
 	}
 
 
@@ -38,6 +48,9 @@ class Site_manager_server
 	}
 
 
+	
+
+
 	public function config()
 	{
 		$this->output($this->EE->config->config);
@@ -46,7 +59,8 @@ class Site_manager_server
 
 	public function channels()
 	{
-		$this->output($this->local_data->channels());
+		
+		$this->output($this->EE->local_data->channel_data());
 	}
 
 
