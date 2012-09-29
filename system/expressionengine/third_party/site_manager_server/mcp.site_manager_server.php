@@ -19,7 +19,7 @@ class Site_manager_server_mcp
 		$this->EE->load->model("local_data");
 
 		//CSS Resources
-		$this->EE->cp->add_to_head("<link href='".URL_THIRD_THEMES."site_manager_server/css/site_manager_server.css' rel='stylesheet'/>");
+		$this->EE->cp->add_to_head("<link href='".$this->EE->config->item("theme_folder_url")."third_party/site_manager_server/css/site_manager_server.css' rel='stylesheet'/>");
 	}
 
 

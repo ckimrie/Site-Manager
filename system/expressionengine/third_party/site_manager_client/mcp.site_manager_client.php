@@ -30,7 +30,7 @@ class Site_manager_client_mcp
 
 		//What resources do we need?
 		//Requirejs::load("css!third_party/site_manager_client/css/site_manager_client.css");
-		$this->EE->cp->add_to_head("<link href='".URL_THIRD_THEMES."site_manager_client/css/site_manager_client.css' rel='stylesheet'/>");
+		$this->EE->cp->add_to_head("<link href='".$this->EE->config->item("theme_folder_url")."third_party/site_manager_client/css/site_manager_client.css' rel='stylesheet'/>");
 
 
 

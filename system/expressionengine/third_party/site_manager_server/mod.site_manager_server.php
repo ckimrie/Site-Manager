@@ -44,6 +44,12 @@ class Site_manager_server
 	}
 
 
+	public function channels()
+	{
+		$this->output($this->local_data->channels());
+	}
+
+
 	public function output($data=array())
 	{
 
