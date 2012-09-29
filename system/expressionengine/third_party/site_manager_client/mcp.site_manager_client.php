@@ -138,13 +138,16 @@ class Site_manager_client_mcp
 	{
 		$site_id = $this->EE->input->get("site_id");
 		
-		Requirejs::load("third_party/site_manager_client/js/site_details");
-
 
 
 		$data = array();
 		$data['site'] = $this->EE->site_data->get($site_id);
 		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details");
+
+
+		//Add script tag to head to circumvent cross domain scripting security
+		//$this->EE->cp->add_to_foot("<script type='text/javascript' src='".$data['site']->ping_url()."'></script>");
+		Requirejs::load("third_party/site_manager_client/js/site_details/index");
 
 		$this->page_title = $data['site']->name();
 

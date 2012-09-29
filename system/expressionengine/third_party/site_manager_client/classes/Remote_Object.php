@@ -33,6 +33,11 @@ class Remote_Object
 		return $a;
 	}
 
+	public function ping_url()
+	{
+		return $this->buildUrl("ping");
+	}
+
 
 
 	protected function new_connection($method="", $fragments=array())
@@ -50,15 +55,15 @@ class Remote_Object
 	}
 
 
-	private function buildUrl($method="", $fragments=array())
+	protected function buildUrl($method="", $fragments=array())
 	{
-		if(!$method) {
-			throw new Exception("Remote method not specified");
-		}
-
 		$url = $this->api_url;
 
-		$url .= "&method=".$method;
+		if($method) {
+			$url .= "&method=".$method;
+		}
+
+		
 		$url .= "&site_id=".$this->site_id;
 
 		foreach ($fragments as $key => $value) {

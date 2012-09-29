@@ -44,7 +44,11 @@ class Site_manager_server
 
 	public function ping()
 	{
-		$this->output(array("app_version" => $this->EE->config->item("app_version")));
+		$this->output(array(array(
+			"app_version" => $this->EE->config->item("app_version"),
+			"site_id" => $this->EE->config->item("site_id"),
+			"module_version" => $this->version.""
+		)));
 	}
 
 
@@ -70,11 +74,11 @@ class Site_manager_server
 
 		$this->EE->load->library('javascript');
 		$this->EE->output->set_status_header($this->response_code);
-		if ($this->EE->config->item('send_headers') == 'y')
-		{
-			@header('Content-Type: application/json');
+
+		@header("Access-Control-Allow-Origin: *");
+		@header('Content-Type: application/json');
 		
-		}
+		
 		
 		exit($this->EE->javascript->generate_json($data, TRUE));
 	}

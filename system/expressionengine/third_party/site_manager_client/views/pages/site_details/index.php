@@ -31,4 +31,9 @@
 	window.SM = {};
 	window.SM.js_api = "<?php echo $js_api ?>";
 	window.SM.site_id = <?php echo $site->id() ?>;
+
+	define('site_config', [], function() {
+		return <?php echo $site->js_config() ?>; 
+	});
+
 </script>

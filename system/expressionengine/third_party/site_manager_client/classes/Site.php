@@ -80,6 +80,21 @@ class Site extends Remote_Object
 	}
 
 
+	public function js_config()
+	{
+		$a = array(
+			"site_id" => $this->id(),
+			"site_name" => $this->name(),
+			"base_url" => $this->base_url(),
+			"cp_url" => $this->cp_url(),
+			"local_url" => $this->local_url(),
+			"api_url" => $this->buildUrl()
+		);
+
+		return json_encode($a);
+	}
+
+
 
 	public function thumbnail($width=120)
 	{
