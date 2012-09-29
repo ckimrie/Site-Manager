@@ -7,8 +7,9 @@ class Site_manager_client_upd
 {
 
 	var $EE;
-	var $version	= 0.1;
-	var $module_name = "Site_manager_client";
+	var $version		= 0.1;
+	var $module_name 	= "Site_manager_client";
+	var $db_name		= "site_manager_sites";
 	
 	function __construct()
 	{
@@ -31,6 +32,37 @@ class Site_manager_client_upd
 			'has_publish_fields'	=>	'n'
 		);
 		$this->EE->db->insert('modules', $data);
+
+
+		
+		$this->EE->load->dbforge();
+		$fields = array(
+			"id" 		=> array(
+							"type" => "INT",
+							"auto_increment" => TRUE,
+						),
+			"site_name" =>  array(
+							"type" => "VARCHAR",
+							"constraint" => "128"
+						),
+			"base_url" 	=>  array(
+							"type" => "VARCHAR",
+							"constraint" => "255"
+						),
+			"settings" 	=> array(
+							"type" => "TEXT",
+							"null" => TRUE
+						),
+			"added_by" 	=> array(
+							"type" => "INT"
+						),
+			"date_added" => array(
+							"type" => "INT"
+						)
+		);
+		$this->EE->dbforge->add_field($fields);
+		$this->EE->dbforge->add_key('id', TRUE);
+		$this->EE->dbforge->create_table($this->db_name);
 		
 		return TRUE;
 	}
