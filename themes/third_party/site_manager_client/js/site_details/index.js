@@ -4,7 +4,7 @@ define(["jquery", 'site_config', "../lib/Site"], function($, site_config, Site) 
 
 
 	//Ping Site
-	site.ping().done(function(data) {
-
-	});
+	site.ping();
 });
+
+

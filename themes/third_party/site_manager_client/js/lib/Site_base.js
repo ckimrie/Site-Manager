@@ -13,12 +13,23 @@ define(['jquery'],function($) {
 			ping = this.get("ping");
 
 		ping.done(function(data) {
+			//SUCCESS
+			$(".status").removeClass("active").filter(".live").addClass("active");
+			setTimeout(function() {
+				$(".status").parent().addClass("loaded");
+			}, 2000);
+
+			$(".app_version").text(data[0].app_version);
+
 			def.resolve(data);
 		});
 
 		ping.fail(function(status, jqXHR) {
+			$(".status").removeClass("active").filter(".offline").addClass("active").parent().addClass("loaded");
 			def.reject("Unable to communicate with site. Status: " + status);
 		});
+
+		return def;
 	};
 
 

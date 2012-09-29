@@ -159,17 +159,16 @@ class Site_manager_client_mcp
 	{
 		$site_id = $this->EE->input->get("site_id");
 		
-		Requirejs::load("third_party/site_manager_client/js/site_details");
+		Requirejs::load("third_party/site_manager_client/js/site_details/config");
 
 
 
 		$data = array();
 		$data['site'] = $this->EE->site_data->get($site_id);
 		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details_config");
-		$data['config'] = $data['site']->config();
+		
 
-		//Sort config
-		ksort($data['config']);
+	
 
 		$this->page_title = $data['site']->name();
 
