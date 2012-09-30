@@ -50,7 +50,7 @@ class Site_manager_client_mcp
 
 	public function index()
 	{
-		Requirejs::load("third_party/site_manager_client/js/index");
+		Requirejs::load("third_party/site_manager_client/js/index/index");
 
 
 		$data['sites'] = $this->EE->site_data->get_all();
@@ -178,6 +178,51 @@ class Site_manager_client_mcp
 
 
 
+	public function site_details_channels()
+	{
+		$site_id = $this->EE->input->get("site_id");
+		
+		Requirejs::load("third_party/site_manager_client/js/site_details/channels");
+
+
+
+		$data = array();
+		$data['site'] = $this->EE->site_data->get($site_id);
+		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details_channels");
+		
+
+	
+
+		$this->page_title = $data['site']->name();
+
+		return $this->view("site_details/channels", $data);
+	}
+
+
+
+	public function site_details_addons()
+	{
+		$site_id = $this->EE->input->get("site_id");
+		
+		Requirejs::load("third_party/site_manager_client/js/site_details/addons");
+
+
+
+		$data = array();
+		$data['site'] = $this->EE->site_data->get($site_id);
+		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details_addons");
+		
+
+	
+
+		$this->page_title = $data['site']->name();
+
+		return $this->view("site_details/addons", $data);
+	}
+
+
+
+
 
 	/**
 	 * Ajax Endpoint
@@ -242,10 +287,10 @@ class Site_manager_client_mcp
 										"label" => "Configuration",
 										"url" 	=> methodUrl("site_details_config", array("site_id" => $site_id))
 									),
-			"site_details_channel" 	=> array(
-										"active"=> $current == "site_details_channel",
+			"site_details_channels" 	=> array(
+										"active"=> $current == "site_details_channels",
 										"label" => "Channels",
-										"url" 	=> methodUrl("site_details_channel", array("site_id" => $site_id))
+										"url" 	=> methodUrl("site_details_channels", array("site_id" => $site_id))
 									),
 			"site_details_addons" 	=> array(
 										"active"=> $current == "site_details_addons",

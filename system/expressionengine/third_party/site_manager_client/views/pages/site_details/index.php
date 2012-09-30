@@ -22,6 +22,23 @@
 			</div>
 			<p class="meta"><a href="<?php echo $site->base_url() ?>" target="_blank"><?php echo $site->base_url() ?></a> &nbsp; &nbsp; &nbsp; &nbsp; <a href="<?php echo $site->cp_url() ?>" target="_blank">Login to CP</a> &nbsp; &nbsp; &nbsp; &nbsp; EE: <span class="app_version">-</span></p>
 
+			<div class="dynamicDataWrapper">
+				<div class="dynamicData">
+					<table class="mainTable padTable statTable" border="0" cellpadding="0" cellspacing="0">
+						<tbody>
+							<tr>
+								<th width="25%">License Number</th>
+								<td width="25%" class="license_number"></td>
+							</tr>
+							<tr>
+								<th>System Online</th>
+								<td class="is_system_on"></td>
+							</tr>
+							
+						</tbody>
+					</table>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

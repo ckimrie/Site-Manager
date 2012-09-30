@@ -45,9 +45,7 @@ class Site_manager_server
 	public function ping()
 	{
 		$this->output(array(array(
-			"app_version" => $this->EE->config->item("app_version"),
-			"site_id" => $this->EE->config->item("site_id"),
-			"module_version" => $this->version.""
+			"app_version" => $this->EE->config->item("app_version")
 		)));
 	}
 
@@ -63,9 +61,29 @@ class Site_manager_server
 
 	public function channels()
 	{
-		
 		$this->output($this->EE->local_data->channel_data());
 	}
+
+
+
+	public function installation_details()
+	{
+		$this->output(array(
+			"is_system_on"		=> $this->EE->config->item("is_system_on") == "y" ? TRUE : FALSE,
+			"license_number"	=> $this->EE->config->item("license_number"),
+			"app_version" 		=> $this->EE->config->item("app_version"),
+			"site_id" 			=> $this->EE->config->item("site_id"),
+			"module_version" 	=> $this->version.""
+		));
+	}
+
+
+
+	public function addons()
+	{
+		$this->output($this->EE->local_data->addon_data());
+	}
+
 
 
 	public function output($data=array())
