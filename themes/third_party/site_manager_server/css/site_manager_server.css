@@ -6,6 +6,7 @@
 }
 .payload_settings_wrapper .label {
 	display: block;
+	width: 90%;
 	margin: 0;
 	padding:5px 10px 4px ;
 	background: #eee;
@@ -20,7 +21,7 @@
 	background-image:         linear-gradient(to bottom, #ffffff, #dbdbdb); /* Firefox 16+, IE10, Opera 12.50+ */
 }
 #payload_settings {
-	width: 100%;
+	width: 90%;
 	padding: 10px;
 	font-family: monospace;
 	background: #444;
@@ -41,7 +42,9 @@
 	font-size: 2.2em;
 	font-family: Helvetica Light, Helvetica, sans-serif;
 }
-
+#mainContent .pageContents {
+	min-height:200px;
+}
 #mainContent .pageContents p{
 	font-size: 1.1em;
 	font-family: Helvetica Neue, Helvetica, sans-serif;

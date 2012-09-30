@@ -148,7 +148,7 @@ class Local_data extends CI_model
 			$m = array();
 			$type = "third_party";
 
-			if($module_info['type'] == "native") {
+			if(@$module_info['type'] == "native") {
 				$type = "native";
 			}
 
@@ -214,7 +214,7 @@ class Local_data extends CI_model
 			$e = array();
 			$type = "third_party";
 
-			if($ext['type'] == "native") {
+			if(@$ext['type'] == "native") {
 				$type = "native";
 			}
 
@@ -252,7 +252,7 @@ class Local_data extends CI_model
 			$f = array();
 			$type = "third_party";
 
-			if($ft_info['type'] == "native") {
+			if(@$ft_info['type'] == "native") {
 				$type = "native";
 			}
 
@@ -299,13 +299,15 @@ class Local_data extends CI_model
 		/**
 		 * Accessories
 		 */
-
-		$accessories = $this->addons->get_files('accessories');
+		$accessories = array();
+		//$accessories = $this->addons->get_files('accessories');
 		$installed = $this->addons->get_installed('accessories');
+
 
 
 		foreach ($accessories as $name => $info)
 		{
+
 			// Grab the version and description
 			if ( ! class_exists($accessories[$name]['class']))
 			{
