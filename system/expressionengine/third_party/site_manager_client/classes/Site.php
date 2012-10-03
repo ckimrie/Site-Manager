@@ -69,6 +69,12 @@ class Site extends Remote_Object
 	}
 
 
+    public function login_url()
+    {
+        return $this->buildUrl("login", array("user_id" => $this->setting("user_id")));
+    }
+
+
 
 	public function config()
 	{
@@ -96,13 +102,52 @@ class Site extends Remote_Object
 
 
 
-	public function thumbnail($width=120)
+	public function thumbnail($width=122, $height = 202)
 	{
-		return "http://zenithwebtechnologies.com.au/thumbnail01.php?type=png&width=".$width."&imageSpecs=absolute&url=".$this->base_url();
+		if(!$this->validUrl()){
+			return;
+		}
+
+		$site = $this->_scrub_url($this->base_url());
+		return "http://zenithwebtechnologies.com.au/thumbnail01.php?type=png&width=".$width."&height=".$height."&imageSpecs=absolute&url=".$site;
 	}
 
 
+	public function validUrl()
+	{
+		$URL_FORMAT =
+			'/^(https?):\/\/'.                                         // protocol
+			'(([a-z0-9$_\.\+!\*\'\(\),;\?&=-]|%[0-9a-f]{2})+'.         // username
+			'(:([a-z0-9$_\.\+!\*\'\(\),;\?&=-]|%[0-9a-f]{2})+)?'.      // password
+			'@)?(?#'.                                                  // auth requires @
+			')((([a-z0-9][a-z0-9-]*[a-z0-9]\.)*'.                      // domain segments AND
+			'[a-z][a-z0-9-]*[a-z0-9]'.                                 // top level domain  OR
+			'|((\d|[1-9]\d|1\d{2}|2[0-4][0-9]|25[0-5])\.){3}'.
+			'(\d|[1-9]\d|1\d{2}|2[0-4][0-9]|25[0-5])'.                 // IP address
+			')(:\d+)?'.                                                // port
+			')(((\/+([a-z0-9$_\.\+!\*\'\(\),;:@&=-]|%[0-9a-f]{2})*)*'. // path
+			'(\?([a-z0-9$_\.\+!\*\'\(\),;:@&=-]|%[0-9a-f]{2})*)'.      // query string
+			'?)?)?'.                                                   // path and query string optional
+			'(#([a-z0-9$_\.\+!\*\'\(\),;:@&=-]|%[0-9a-f]{2})*)?'.      // fragment
+			'$/i';
 
+
+		if (substr(strtolower($this->base_url()), 0, strlen('http://localhost')) == 'http://localhost') {
+			return false;
+		}
+		return preg_match($URL_FORMAT, $this->base_url());
+	
+	}
+
+
+	private function _scrub_url($url='')
+	{
+		$url = str_replace(array("http://", "index.php"), "", $this->base_url());
+		if(strpos($url, "/") === strlen($url)-1) {
+			$url = substr($url, 0, strlen($url)-1);
+		}
+		return $url;
+	}
 
 	/**
 	 * Initialise the class

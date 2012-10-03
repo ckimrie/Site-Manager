@@ -6,6 +6,9 @@
 			<li class="<?php if($nav['active']) echo "active"; ?>"><a href="<?php echo $nav['url'] ?>"><?php echo $nav['label'] ?></a></li>
 		<?php endforeach; ?>
 		</ul>
+		<ul class="bottom">
+			<li><a href="<?php echo $delete_url ?>" onclick="return confirm('Are you sure you want to delete this site?');">Delete Site</a></li>
+		</ul>
 	</div>
 	<div class="right">
 		<div class="site-details">
@@ -15,11 +18,7 @@
 				<span class="status connecting active"></span>
 				<span class="status offline"></span>
 			</div>
-			<div class="connection-stats">
-				<ul>
-					<li>Total Time: <span class="total_time">--</span></li>
-				</ul>
-			</div>
+		
 			<p class="meta"><a href="<?php echo $site->base_url() ?>" target="_blank"><?php echo $site->base_url() ?></a> &nbsp; &nbsp; &nbsp; &nbsp; <a href="<?php echo $site->cp_url() ?>" target="_blank">Control Panel</a> &nbsp; &nbsp; &nbsp; &nbsp; EE: <span class="app_version">-</span></p>
 			
 			<div class="dynamicDataWrapper">

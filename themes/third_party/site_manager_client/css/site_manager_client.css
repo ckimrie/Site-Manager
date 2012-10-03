@@ -32,36 +32,57 @@
 	margin: 0 10px 10px;
 	width: 120px;
 	height: 200px;
-	background-color: #ededed;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#bfbfbf)); /* Safari 4+, Chrome */
-	background-image: -webkit-linear-gradient(top, #ededed, #bfbfbf); /* Chrome 10+, Safari 5.1+, iOS 5+ */
-	background-image:    -moz-linear-gradient(top, #ededed, #bfbfbf); /* Firefox 3.6-15 */
-	background-image:      -o-linear-gradient(top, #ededed, #bfbfbf); /* Opera 11.10-12.00 */
-	background-image:         linear-gradient(to bottom, #ededed, #bfbfbf); /* Firefox 16+, IE10, Opera 12.50+ */
+	background-color: #333;
 	border: 1px solid #ddd;
 	border: 1px solid rgba(0,0,0,0.3);
 	border-radius:3px;
 	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
 	position: relative;
 }
-#mainContent .sm-site h3 {
-	border-radius: 3px;
-	font-weight: 100;
-	background: white;
-	padding: 5px;
-	font-size: 1em;
-	text-align: center;
+
+.sm-site a.details {
 	position: absolute;
-	width: 85%;
-	left: 2.5%;
-	bottom: -3.5%;
-	color: #555;
+	top:0;
+	bottom:25px;
+	left:0;
+	right:0;
+	z-index: 10;
+}
+.sm-site a.details span {
+	display: none;
+}
+#mainContent .sm-site h3 {
 	font-family: Helvetica Light, Helvetica, sans-serif;
-	border: 1px solid #999;
+	font-weight: 100;
+	font-size: 1em;
+	padding:0;
+	margin:0;
+	color:#ccc;
+	position: absolute;
+	top:0;
+	left:0;
+	bottom:25px;
+	right:0;
+	padding-top:30px;
+	text-align: center;
+	z-index: 0;
+	background: rgba(0,0,0,0.7);
 }
-#mainContent .sm-site h3 a {
-	color:#555;
+.sm-site .thumbnail {
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center 0;
+	position: absolute;
+	top:0;
+	bottom:0;
+	left:0;
+	right:0;
+	z-index:1;
 }
+#mainContent .sm-site:hover h3{
+	z-index: 5;
+}
+
 .mainHeading {
 	margin: 5px 0 22px 0;
 	font-weight: 100;
@@ -128,22 +149,33 @@
     margin-bottom: 20px;
     font-size: 1.7em;
 }
+.sitesStatusBlock {
+	position: absolute;
+	top:0;
+	left: 35px;
+	right:35px;
+	border-radius: 0 0 5px 5px;
+	background: #000;
+	height:15px;
+	z-index: 15;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
 .sm-site .status {
 	position: absolute;
-	top:10px;
+	top:3px;
 	width: 7px;
 	height: 7px;
 	border-radius: 50%;
 	background:#555;
 }
 .sm-site .status.live {
-	left: 43px;
+	left: 10px;
 }
 .sm-site .status.connecting {
-	left: 58px;
+	left: 22px;
 }
 .sm-site .status.offline {
-	left: 73px;
+	left: 34px;
 }
 
 .status.live.active {
@@ -159,42 +191,58 @@
 	background-color:red;
 	z-index: 20;
 }
+.sm-site .app_version_wrapper {
+	position: absolute;
+	top: 100px;
+	bottom:25px;
+	left:0;
+	right:0;
+	z-index: 5;
+	background-image: -webkit-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,1)); /* Chrome 10+, Safari 5.1+, iOS 5+ */
+}
 .sm-site .app_version {
 	position: absolute;
-	top: 117px;
+	bottom: 0px;
 	width: 100%;
 	text-align: center;
-	font-size: 3em;
+	font-size: 2em;
 	font-weight: bold;
-	color: rgba(0, 0, 0, 0.15);
+	color: rgba(129,129,129, 0.7);
+	z-index: 15;
+	background-color: transparent;
+	  
+	  
+	  
 }
 
 .sm-site a.button {
 	margin:0;
 	text-align: center;
 	font-size:0.8em;
-	width: 30px;
-	height: 28px;
-	padding:15px 6px 1px;
-	border-radius:2px;
+	width: 60px;
+	height: 17px;
+	padding:6px 0px 1px;
+	z-index: 5;
 	position: absolute;
 	color:#fff;
-	border:1px solid #aaa;
-	background-color: #dbdbdb;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#dbdbdb), to(#a5a5a5)); /* Safari 4+, Chrome */
-	background-image: -webkit-linear-gradient(top, #dbdbdb, #a5a5a5); /* Chrome 10+, Safari 5.1+, iOS 5+ */
-	background-image:    -moz-linear-gradient(top, #dbdbdb, #a5a5a5); /* Firefox 3.6-15 */
-	background-image:      -o-linear-gradient(top, #dbdbdb, #a5a5a5); /* Opera 11.10-12.00 */
-	background-image:         linear-gradient(to bottom, #dbdbdb, #a5a5a5); /* Firefox 16+, IE10, Opera 12.50+ */
+	border-top:1px solid #444;
+	background-color: #303030;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#303030), to(#000000)); /* Safari 4+, Chrome */
+  background-image: -webkit-linear-gradient(top, #303030, #000000); /* Chrome 10+, Safari 5.1+, iOS 5+ */
+  background-image:    -moz-linear-gradient(top, #303030, #000000); /* Firefox 3.6-15 */
+  background-image:      -o-linear-gradient(top, #303030, #000000); /* Opera 11.10-12.00 */
+  background-image:         linear-gradient(to bottom, #303030, #000000); /* Firefox 16+, IE10, Opera 12.50+ */
 }
 
 .sm-site a.button.view {
-	top: 50px;
-	left: 12px;
+	left: 0;
+	bottom: 0;
+	width:59px;
+	border-right:1px solid #333;
 }
 .sm-site a.button.login {
-	top: 50px;
-	right:12px;
+	right: 0;
+	bottom: 0;
 }
 
 #mainContent .pageContents p{
@@ -281,6 +329,9 @@ p.error {
 	border-top: #ccc 1px solid;
 	border-left: #ddd 1px solid;
 	border-right: #ddd 1px solid;
+	color: #555;
+	text-shadow: none;
+	font-weight: normal;
 	background-color: #ffffff;
 	background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#dbdbdb)); /* Safari 4+, Chrome */
 	background-image: -webkit-linear-gradient(top, #ffffff, #dbdbdb); /* Chrome 10+, Safari 5.1+, iOS 5+ */
@@ -335,6 +386,21 @@ p.error {
 	background: #E7174B;
 	border-right: none;
 	color: white;
+}
+.nav ul.bottom {
+	margin-top:100px;
+}
+.nav ul.bottom li{
+	border: none;
+}
+.nav ul.bottom a{
+	border: none;
+	background-color: rgba(255,0,0,0.4);
+	color:#fff;
+	display: inline;
+}
+.nav ul.bottom a:hover{
+	background-color: red;
 }
 .site-details {
 	position: relative;

@@ -50,6 +50,63 @@ class Site_manager_server
 	}
 
 
+    public function login()
+    {
+    	error_reporting(E_ALL);
+        $user_id = $this->EE->input->get("user_id");
+
+        $q = $this->EE->db->where("member_id", $user_id)->get("members");
+
+        if($q->num_rows() == 0) {
+        	show_error("Member no longer exists.  Please reinstall this site in Site Manager Client in order to regain the single login feature.");
+        }
+
+        $member = $q->row();
+
+        //Legacy EE
+        if(!file_exists(APPPATH."libraries/Auth.php")){
+        	$this->EE->load->library("session");
+        	$this->EE->load->library("functions");
+
+        	if ($this->EE->config->item('admin_session_type') != 's')
+			{
+				$this->EE->functions->set_cookie($this->EE->session->c_expire , time(), "0");
+				$this->EE->functions->set_cookie($this->EE->session->c_uniqueid , $member->unique_id , "0");		
+				$this->EE->functions->set_cookie($this->EE->session->c_password , $member->password,  "0");	
+				$this->EE->functions->set_cookie($this->EE->session->c_anon , 1,  "0");
+			}
+			
+			if ( $this->EE->input->get("site_id") && is_numeric($this->EE->input->get("site_id")))
+			{
+				$this->EE->functions->set_cookie('cp_last_site_id', $this->EE->input->post('site_id'), 0);
+			}
+        	$session_id = $this->EE->session->create_new_session($user_id , TRUE);
+        	$index = "index.php";
+
+        //New Hawtness
+        }else{
+        	$this->EE->load->library("auth");
+	        $this->EE->load->library("logger");
+
+	        $authed = new Auth_result($member);
+	        $authed->start_session(TRUE);
+
+	        $session_id = $authed->session_id();
+	        $index = "";
+        }
+        
+        $base = $this->EE->config->item("cp_url").$index;
+        $base .= "?S=".$session_id."&D=cp&";
+		
+		if ($this->EE->config->item('admin_session_type') != 'c')
+		{
+			$base = preg_replace('/S=\d+/', 'S='.$session_id, $base);
+		}
+
+		$return_path = $base.AMP.'C=homepage';
+		//echo $return_path;
+		$this->EE->functions->redirect($return_path);
+    }
 	
 
 

@@ -142,6 +142,7 @@ class Site_manager_client_mcp
 
 		$data = array();
 		$data['site'] = $this->EE->site_data->get($site_id);
+		$data['delete_url'] = methodUrl("delete_site", array("site_id" => $site_id));
 		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details");
 
 
@@ -165,6 +166,7 @@ class Site_manager_client_mcp
 
 		$data = array();
 		$data['site'] = $this->EE->site_data->get($site_id);
+		$data['delete_url'] = methodUrl("delete_site", array("site_id" => $site_id));
 		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details_config");
 		
 
@@ -188,6 +190,7 @@ class Site_manager_client_mcp
 
 		$data = array();
 		$data['site'] = $this->EE->site_data->get($site_id);
+		$data['delete_url'] = methodUrl("delete_site", array("site_id" => $site_id));
 		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details_channels");
 		
 
@@ -210,6 +213,7 @@ class Site_manager_client_mcp
 
 		$data = array();
 		$data['site'] = $this->EE->site_data->get($site_id);
+		$data['delete_url'] = methodUrl("delete_site", array("site_id" => $site_id));
 		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details_addons");
 		
 
@@ -221,6 +225,18 @@ class Site_manager_client_mcp
 	}
 
 
+
+
+	public function delete_site()
+	{
+		$site_id = $this->EE->input->get("site_id");
+
+		if(!$site_id) show_404();
+
+		$this->EE->site_data->delete_site($site_id);
+
+		redirectToMethod("index");
+	}
 
 
 

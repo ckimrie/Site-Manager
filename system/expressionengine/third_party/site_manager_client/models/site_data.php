@@ -115,6 +115,15 @@ class Site_data extends CI_Model
 	}
 
 
+	public function delete_site($site_id='')
+	{
+		if(!$site_id) return;
+		
+		$this->EE->db->where("id", $site_id);
+		$this->EE->db->delete("site_manager_sites");
+	}
+
+
 	public function verify_settings_payload($str='')
 	{
 		$a = $this->decode_settings_payload($str);
