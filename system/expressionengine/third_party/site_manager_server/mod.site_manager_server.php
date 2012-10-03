@@ -112,7 +112,9 @@ class Site_manager_server
 
 	public function config()
 	{
-		$this->output($this->EE->config->config);
+		$c = $this->EE->config->config;
+		ksort($c);
+		$this->output($c);
 	}
 
 
