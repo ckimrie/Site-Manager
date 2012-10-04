@@ -40,6 +40,9 @@ class Site_manager_client_mcp
 
 		$data = array();
 		$data['add_url'] = methodUrl("add_site");
+		$data['license_review_url'] = methodUrl("license_review");
+		$data['all_sites_url'] = methodUrl("index");
+
 		$this->EE->load->vars(array(
 			"js_api" 		=> methodUrl("ajax"),
 			"navigation"	=> $this->EE->load->view("embeds/navigation-top", $data, TRUE)
@@ -224,6 +227,17 @@ class Site_manager_client_mcp
 		return $this->view("site_details/addons", $data);
 	}
 
+	public function license_review()
+	{
+		Requirejs::load("third_party/site_manager_client/js/index/license_review");
+
+
+		$data['sites'] = $this->EE->site_data->get_all();
+		
+		$this->page_title = "License Review";
+
+		return $this->view("index/license_review", $data);
+	}
 
 
 

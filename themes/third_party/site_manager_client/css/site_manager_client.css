@@ -15,7 +15,18 @@
 	background-color: rgba(255,255,255,0.4);
 	border: 1px solid #ddd;
 	border-color: rgba(0,0,0,0.1);
+	overflow: hidden;
 }
+.btn-bar .left {
+	width:30%;
+	float: left;
+}
+.btn-bar .right {
+	width:70%;
+	float: right;
+	text-align: right;
+}
+
 .btn-bar a {
 	cursor: pointer;
 	text-decoration: none;
@@ -167,6 +178,14 @@
 	height: 7px;
 	border-radius: 50%;
 	background:#555;
+}
+table .status {
+
+	display: inline-block;
+	height:12px;
+	width:12px;
+	border-radius:50%;
+	background-color: #555;
 }
 .sm-site .status.live {
 	left: 10px;

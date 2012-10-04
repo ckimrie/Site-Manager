@@ -6,7 +6,9 @@ define(["jquery", 'site_configs', "../lib/Site"], function($, site_configs, Site
 	$.each(site_configs, function(i, site_config) {
 		var s = new Site(site_config);
 		s.setParentDiv($("#site-"+s.config.site_id));
-		s.ping();
+		s.ping().done(function(data){
+			s.parentDiv.find(".app_version").text(data[0].app_version);
+		});
 		sites.push(s);
 	});
 	

@@ -23,22 +23,31 @@ define(['jquery'],function($) {
 			var there = here;
 
 			//SUCCESS
-			here.parentDiv.find(".status").removeClass("active").filter(".live").addClass("active");
-			setTimeout(function() {
-				there.parentDiv.find(".status").parent().addClass("loaded");
-			}, 2000);
-
-			here.parentDiv.find(".app_version").text(data[0].app_version);
+			here.updateUIStatus(data);
 
 			def.resolve(data);
 		});
 
 		ping.fail(function(status, jqXHR) {
-			here.parentDiv.find(".status").removeClass("active").filter(".offline").addClass("active").parent().addClass("loaded");
+			here.updateUIStatus(false);
 			def.reject("Unable to communicate with site. Status: " + status);
 		});
 
 		return def;
+	};
+
+
+	Site_base.updateUIStatus = function (success) {
+		var here = this;
+
+		if(success){
+			this.parentDiv.find(".status").removeClass("active").filter(".live").addClass("active");
+			setTimeout(function() {
+				here.parentDiv.find(".status").parent().addClass("loaded");
+			}, 2000);
+		}else {
+			this.parentDiv.find(".status").removeClass("active").filter(".offline").addClass("active").parent().addClass("loaded");
+		}
 	};
 
 
