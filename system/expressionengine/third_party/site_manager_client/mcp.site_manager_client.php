@@ -39,9 +39,10 @@ class Site_manager_client_mcp
 		$this->EE->load->helper("navigation");
 
 		$data = array();
-		$data['add_url'] = methodUrl("add_site");
+		$data['add_url'] 			= methodUrl("add_site");
 		$data['license_review_url'] = methodUrl("license_review");
-		$data['all_sites_url'] = methodUrl("index");
+		$data['all_sites_url'] 		= methodUrl("index");
+		$data['sync_url'] 			= methodUrl("sync");
 
 		$this->EE->load->vars(array(
 			"js_api" 		=> methodUrl("ajax"),
@@ -238,6 +239,22 @@ class Site_manager_client_mcp
 
 		return $this->view("index/license_review", $data);
 	}
+
+
+
+
+	public function sync()
+	{
+		Requirejs::load("third_party/site_manager_client/js/sync/index");
+
+
+		$data['sites'] = $this->EE->site_data->get_all();
+		
+		$this->page_title = "Synchronise";
+
+		return $this->view("sync/index", $data);
+	}
+
 
 
 

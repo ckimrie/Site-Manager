@@ -522,3 +522,35 @@ table.mainTable thead tr:first-child th {
 .channelTemplate {
 	display: none;
 }
+
+/* Sync */
+
+.syncWrapper {
+	overflow: hidden;
+	width: 852px;
+	margin: 0 auto;
+	min-height:300px;
+	padding:10px 0;
+}
+
+.syncWrapper .site {
+	width: 42%;
+	background-color: rgba(0,0,0,0.2);
+	float:left;
+}
+.syncWrapper .gutter {
+	width: 16%;
+	min-height:10px;
+	float:left;
+	padding: 5px 0;
+	margin-top:-5px;
+	background-color: rgba(0,0,0,0.7);
+	border-radius: 4px;
+	box-shadow: 0 0 3px rgba(0,0,0,0.7)
+}
+
+.syncWrapper .site .site-header,
+.syncWrapper .gutter .gutter-header {
+	text-align: center;
+	padding:5px;
+}
