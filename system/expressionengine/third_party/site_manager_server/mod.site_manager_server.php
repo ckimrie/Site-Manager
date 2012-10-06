@@ -173,6 +173,7 @@ class Site_manager_server
 	public function create_categorygroup()
 	{
 		$data = array();
+
 		foreach ($_POST as $key => $value) {
 			$data[$key] = $this->EE->input->post($key);
 		}

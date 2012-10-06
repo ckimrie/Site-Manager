@@ -196,8 +196,12 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 				if(!data.site_1[i].blank && !data.site_2[i].blank) {
 
 					//Site 1 <-> Site 2   (nothing for now...)
-					//node.append($(document.createElement("div")).addClass("sm-sync-btn btn-left"));
-					//node.append($(document.createElement("div")).addClass("sm-sync-btn btn-right"));
+					a = $(document.createElement("div")).addClass("sm-sync-btn btn-left");
+					here.bindSyncButton(a, "left", i);
+					node.append(a);
+					a = $(document.createElement("div")).addClass("sm-sync-btn btn-right");
+					here.bindSyncButton(a, "right", i);
+					node.append(a);
 				}
 				node.appendTo(gutter);
 			}

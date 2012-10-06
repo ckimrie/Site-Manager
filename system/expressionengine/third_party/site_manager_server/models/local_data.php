@@ -473,13 +473,56 @@ class Local_data extends CI_model
 	 */
 	public function create_categorygroup($data=array())
 	{
+		$categories = array();
+
 		$this->EE->load->model("category_model");
 
+		//Remove category data
+		if($data['categories']) {
+			$categories = $data['categories'];
+			unset($data['categories']);
+		}
+		var_dump($categories);
+
 		$this->EE->category_model->insert_category_group($data);
+		$group_id = $this->EE->db->insert_id();
+
+		$insert_ids = array();
+		$id_map  =array();
+
+
+		//Insert all Categories first (parent ids are fixed further down).  Track all id's new and old
+		foreach ($categories as $key => $category) {
+			$id = $category['cat_id'];
+
+			unset($category['cat_id']);
+
+			$category['site_id'] = $this->site_id;
+			$category['group_id'] = $group_id;
+
+			$this->EE->db->insert("categories", $category);
+
+			$new_id = $this->EE->db->insert_id();
+
+			$insert_ids[] = $new_id;
+			$id_map[$id] = $new_id;
+		}
+
+		//Correct Parent Id's
+		$c = $this->EE->db->where_in("cat_id", $insert_ids)->get("categories")->result_array();
+		foreach ($c as $key => $category) {
+			if($category['parent_id'] != 0) {
+				$this->EE->db->where("cat_id", $category['cat_id'])->update("categories", array("parent_id" => $id_map[$category['parent_id']]));
+			}
+		}
+
+
+		//Parents first
+
 
 		//Return a complete record
 		$data['site_id'] = $this->site_id;
-		$data['group_id'] = $this->EE->db->insert_id();
+		$data['group_id'] = $group_id;
 
 		return $data;
 	}

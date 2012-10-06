@@ -94,6 +94,7 @@ define(['jquery'],function($) {
 				here._finishedLoading();
 			},
 			error: function(jqXHR, textStatus) {
+				console.log(arguments);
 				def.reject(textStatus, jqXHR);
 
 				here.error = true;
@@ -108,7 +109,7 @@ define(['jquery'],function($) {
 
 	Site_base.url = function(a) {
 
-		return this.config.api_url += "&method="+a;
+		return this.config.api_url + "&method="+a;
 	};
 
 

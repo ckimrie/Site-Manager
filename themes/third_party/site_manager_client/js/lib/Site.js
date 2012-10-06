@@ -50,12 +50,21 @@ define(['jquery', './Site_base'], function($, Site_base) {
 		//Remove data that we have added:
 		delete data.sync_label;
 		delete data.fields;
-		delete data.categories;
 
 
 		//Remove data hazardous to data integrity
 		delete data.group_id;
 		delete data.site_id;
+
+		//Make the categories POST friendly
+		for(var i = 0; i < data.categories.length ; i++){
+			$.each(data.categories[i], function(key, value) {
+				data['categories[' + i + '][' + key + ']'] = value;
+			});
+		}
+
+
+		delete data.categories;
 
 		return this.post("create_categorygroup", data);
 	};
