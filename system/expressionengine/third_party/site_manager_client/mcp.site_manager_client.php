@@ -1,9 +1,11 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-/**
- * CP Class
- */
 
+/**
+ * Site Manager CP Controller
+ * 
+ * @author  Christopher Imrie
+ */
 class Site_manager_client_mcp
 {
 	var $EE;
@@ -13,7 +15,12 @@ class Site_manager_client_mcp
 	var $module_label = "Site Manager";
 	var $page_title = "Site Manager";
 	
-	
+
+	/**
+	 * Constructor
+	 * 
+	 * @author Christopher Imrie
+	 */
 	function __construct()
 	{
 		$this->EE =& get_instance();
@@ -21,15 +28,14 @@ class Site_manager_client_mcp
 		$this->EE->load->file(PATH_THIRD."site_manager_client/ajax.site_manager_client.php");
 		$this->ajax = new Site_manager_client_ajax();
 
+
 		//Ensure RequireJS is installed
 		if(!property_exists($this->EE, "requirejs")){
 			show_error("The Site Manager module needs the <a href='https://github.com/ckimrie/RequireJS-for-EE'>RequireJS-for-EE</a> extension to be installed in order to function correctly.", 500, "Module Required");
 		}
 
 		
-
-		//What resources do we need?
-		//Requirejs::load("css!third_party/site_manager_client/css/site_manager_client.css");
+		//CSS
 		$this->EE->cp->add_to_head("<link href='".$this->EE->config->item("theme_folder_url")."third_party/site_manager_client/css/site_manager_client.css' rel='stylesheet'/>");
 
 
@@ -38,32 +44,45 @@ class Site_manager_client_mcp
 		$this->EE->load->model("site_data");
 		$this->EE->load->helper("navigation");
 
-		$data = array();
-		$data['add_url'] 			= methodUrl("add_site");
-		$data['license_review_url'] = methodUrl("license_review");
-		$data['all_sites_url'] 		= methodUrl("index");
-		$data['sync_url'] 			= methodUrl("sync");
-
-		$this->EE->load->vars(array(
-			"js_api" 		=> methodUrl("ajax"),
-			"navigation"	=> $this->EE->load->view("embeds/navigation-top", $data, TRUE)
-		));
+		
 	}
 
 
 
+
+
+	/*-----------------------------------------------------------
+	 * Pages
+	 * ----------------------------------------------------------
+	 */
+
+	/**
+	 * Module Index Page
+	 * 
+	 * Displays a grid view of all sites currently configured for remote
+	 * management
+	 * 
+	 * @author Christopher Imrie
+	 * @return null      
+	 */
 	public function index()
 	{
+		//Page JS
 		Requirejs::load("third_party/site_manager_client/js/index/index");
 
-
 		$data['sites'] = $this->EE->site_data->get_all();
-		
 
 		return $this->view("index/index", $data);
 	}
 
-
+	/**
+	 * A multi stage page that presents a text box to accept encoded site config data 
+	 * and then on POST displays a form of the data decoded
+	 * 
+	 * @author Christopher Imrie
+	 * 
+	 * @return string
+	 */
 	public function add_site()
 	{
 		$data = array();
@@ -105,6 +124,21 @@ class Site_manager_client_mcp
 
 
 
+	/**
+	 * Create site function
+	 * 
+	 * Accepts a POST array of site configuration data and then calls
+	 * on the site_data model to create each one.
+	 * 
+	 * This page has no UI, it simple accepts data from the "add_site" page
+	 * 
+	 * TODO: 
+	 * - Add data validation 
+	 * 
+	 * @author Christopher Imrie
+	 * 
+	 * @return null
+	 */
 	public function insert_site()
 	{
 		if(!$this->EE->input->post('sites')) show_error("No site data recieved");
@@ -137,21 +171,28 @@ class Site_manager_client_mcp
 	}
 
 
-
+	/**
+	 * Site details - Index Page
+	 * 
+	 * @author Christopher Imrie
+	 * 
+	 * @return string 
+	 */
 	public function site_details()
 	{
 		$site_id = $this->EE->input->get("site_id");
-		
 
+		if(!$site_id) show_404();
 
 		$data = array();
 		$data['site'] = $this->EE->site_data->get($site_id);
 		$data['delete_url'] = methodUrl("delete_site", array("site_id" => $site_id));
 		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details");
 
+		//Site ID provided but doesnt exist in db?
+		if(!$data['site']) show_404();
 
-		//Add script tag to head to circumvent cross domain scripting security
-		//$this->EE->cp->add_to_foot("<script type='text/javascript' src='".$data['site']->ping_url()."'></script>");
+		//Page JS
 		Requirejs::load("third_party/site_manager_client/js/site_details/index");
 
 		$this->page_title = $data['site']->name();
@@ -160,21 +201,26 @@ class Site_manager_client_mcp
 	}
 
 
+
+	/**
+	 * Site details - Config Page
+	 * 
+	 * @author Christopher Imrie
+	 * 
+	 * @return string 
+	 */
 	public function site_details_config()
 	{
 		$site_id = $this->EE->input->get("site_id");
 		
+		//Page JS
 		Requirejs::load("third_party/site_manager_client/js/site_details/config");
-
 
 
 		$data = array();
 		$data['site'] = $this->EE->site_data->get($site_id);
 		$data['delete_url'] = methodUrl("delete_site", array("site_id" => $site_id));
 		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details_config");
-		
-
-	
 
 		$this->page_title = $data['site']->name();
 
@@ -183,13 +229,19 @@ class Site_manager_client_mcp
 
 
 
-
+	/**
+	 * Site details - Channels Page
+	 * 
+	 * @author Christopher Imrie
+	 * 
+	 * @return string 
+	 */
 	public function site_details_channels()
 	{
 		$site_id = $this->EE->input->get("site_id");
 		
+		//Page JS
 		Requirejs::load("third_party/site_manager_client/js/site_details/channels");
-
 
 
 		$data = array();
@@ -197,39 +249,48 @@ class Site_manager_client_mcp
 		$data['delete_url'] = methodUrl("delete_site", array("site_id" => $site_id));
 		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details_channels");
 		
-
-	
-
 		$this->page_title = $data['site']->name();
 
 		return $this->view("site_details/channels", $data);
 	}
 
 
-
+	/**
+	 * Site details - Addons Page
+	 * 
+	 * @author Christopher Imrie
+	 * 
+	 * @return string 
+	 */
 	public function site_details_addons()
 	{
 		$site_id = $this->EE->input->get("site_id");
-		
-		Requirejs::load("third_party/site_manager_client/js/site_details/addons");
 
+		//Page JS		
+		Requirejs::load("third_party/site_manager_client/js/site_details/addons");
 
 
 		$data = array();
 		$data['site'] = $this->EE->site_data->get($site_id);
 		$data['delete_url'] = methodUrl("delete_site", array("site_id" => $site_id));
 		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details_addons");
-		
-
-	
 
 		$this->page_title = $data['site']->name();
 
 		return $this->view("site_details/addons", $data);
 	}
 
+
+	/**
+	 * License and EE version review page
+	 * 
+	 * @author Christopher Imrie
+	 * 
+	 * @return string 
+	 */
 	public function license_review()
 	{
+		//Page JS
 		Requirejs::load("third_party/site_manager_client/js/index/license_review");
 
 
@@ -242,9 +303,16 @@ class Site_manager_client_mcp
 
 
 
-
+	/**
+	 * Multi Site Sync Page
+	 * 
+	 * @author Christopher Imrie
+	 * 
+	 * @return string 
+	 */
 	public function sync()
 	{
+		//Page JS
 		Requirejs::load("third_party/site_manager_client/js/sync/index");
 
 
@@ -257,7 +325,15 @@ class Site_manager_client_mcp
 
 
 
-
+	/**
+	 * Delete a site
+	 * 
+	 * Reads site_id GET variable to specify what site to delete
+	 * 
+	 * @author Christopher Imrie
+	 * 
+	 * @return null 
+	 */
 	public function delete_site()
 	{
 		$site_id = $this->EE->input->get("site_id");
@@ -272,7 +348,17 @@ class Site_manager_client_mcp
 
 
 	/**
-	 * Ajax Endpoint
+	 * Ajax Controller Delegation
+	 * 
+	 * All ajax requests are routed through here and dispatched
+	 * to ajax.site_manager_clien.php sub controller
+	 * 
+	 * Return data from subcontroller is output as JSON
+	 * Status header can be set by subcontroller (default 200)
+	 * 
+	 * @author Christopher Imrie
+	 * 
+	 * @return null 
 	 */
 	public function ajax()
 	{
@@ -294,10 +380,21 @@ class Site_manager_client_mcp
 	}
 
 
+	/*-----------------------------------------------------------
+	 * Utilities
+	 * ----------------------------------------------------------
+	 */
 
 
 	/**
-	 * Validation Method
+	 * Site Config Validation
+	 * 
+	 * Needs to be public since its being called by the CI Form Validation library
+	 * 
+	 * @author Christopher Imrie
+	 * 
+	 * @param  string $str Encoded settings from remote site
+	 * @return boolean      
 	 */
 	public function _valid_settings($str='')
 	{
@@ -305,22 +402,55 @@ class Site_manager_client_mcp
 	}
 
 
-	protected function view($name='', $data=array())
+
+	/**
+	 * CP View Generator
+	 * 
+	 * Convenience method that loads the requested view, sets page title
+	 * and loads various useful template vars
+	 * 
+	 * @author Christopher Imrie
+	 * 
+	 * @param  string $name Template name
+	 * @param  array  $data 
+	 * @return string       
+	 */
+	private function view($name='', $data=array())
 	{
+		$data['cp_page_title'] = $this->page_title;
 		$this->EE->cp->set_variable('cp_page_title', $this->page_title);
 		
+		//Top Bar navigation variables
+		$nav = array();
+		$nav['add_url'] 			= methodUrl("add_site");
+		$nav['license_review_url'] 	= methodUrl("license_review");
+		$nav['all_sites_url'] 		= methodUrl("index");
+		$nav['sync_url'] 			= methodUrl("sync");
+
+
+		//Add some useful vars to the main template data array
+		$data["js_api"] 			= methodUrl("ajax");
+		$data["navigation_top"]			= $this->EE->load->view("embeds/navigation-top", $nav, TRUE);
+		
+		//If title is not 'site manager' then add a breadcrumb, if not leave it as is
 		if($this->page_title != "Site Manager") {
 			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=site_manager_client', $this->module_label);
 		}
 
-		$data['cp_page_title'] = $this->page_title;
 
 		return $this->EE->load->view("pages/".$name, $data, TRUE);	
 	}
 
 
 
-
+	/**
+	 * Top Bar Navigation
+	 * 
+	 * @author Christopher Imrie
+	 * @param  integer $site_id 
+	 * @param  string $current 
+	 * @return array          
+	 */
 	private function _site_detail_navigation($site_id, $current='')
 	{
 		return array(

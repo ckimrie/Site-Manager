@@ -1,7 +1,7 @@
-<?php echo $navigation ?>
+<?php echo $navigation_top ?>
 
 <div class="syncWrapper">
-	
+
 	<div class="site left">
 		<div class="site-header">
 			<select id="sm-site1">
@@ -10,17 +10,18 @@
 		</div>
 		<div id="sm-site1-body"></div>
 	</div>
-	
+
 	<div class="gutter">
 		<div class="gutter-header">
 			<select id="sm-sync_type" disabled>
 				<option value="channels">Channels</option>
 				<option value="fieldgroups">Field Groups</option>
-				<option value="categories">Categories</option>
+				<option value="categorygroups">Categories</option>
 			</select>
 		</div>
+		<div id="sm-gutter-body"></div>
 	</div>
-	
+
 	<div class="site right">
 		<div class="site-header">
 			<select id="sm-site2">
@@ -40,7 +41,7 @@
 	define('site_configs', [], function() {
 		var a = [];
 		<?php foreach ($sites as $site) : ?>
-			a.push(<?php echo $site->js_config() ?>); 
+			a.push(<?php echo $site->js_config() ?>);
 		<?php endforeach; ?>
 
 		return a;

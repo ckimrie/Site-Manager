@@ -1,4 +1,4 @@
-<?php echo $navigation ?>
+<?php echo $navigation_top ?>
 
 <?php foreach ($sites as $site) : ?>
 	<div class="sm-site" id="site-<?php echo $site->id() ?>" data-site-id="<?php echo $site->id() ?>">

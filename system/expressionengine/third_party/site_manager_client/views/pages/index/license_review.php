@@ -1,4 +1,4 @@
-<?php echo $navigation ?>
+<?php echo $navigation_top ?>
 
 <table class="mainTable padTable" cellpadding="0" cellspacing="0">
 	<thead>

@@ -6,7 +6,7 @@
 
 /**
  * Index
- * 
+ *
  */
 .btn-bar {
 	margin-bottom:15px;
@@ -138,7 +138,7 @@
 	color:red;
 	color:rgba(255,0,0,0.2);
 	text-align:center;
-	
+
 }
 
 .channel {
@@ -229,9 +229,9 @@ table .status {
 	color: rgba(129,129,129, 0.7);
 	z-index: 15;
 	background-color: transparent;
-	  
-	  
-	  
+
+
+
 }
 
 .sm-site a.button {
@@ -318,7 +318,7 @@ table .status {
 	margin-bottom: 10px;
 	background-color: #666;
 	color:#fff;
-} 
+}
 
 .dynamicData dd {
 	display: none;
@@ -329,7 +329,7 @@ table .status {
 
 /**
  * Add Site
- * 
+ *
  */
 p.error {
 	color:red;
@@ -338,7 +338,7 @@ p.error {
 .payload_settings_wrapper {
 	float: right;
 	margin: 0px 0 20px 20px;
-	width: 40%;	
+	width: 40%;
 }
 .payload_settings_wrapper .label {
 	display: block;
@@ -369,7 +369,7 @@ p.error {
 	border-color: #ddd;
 	margin:0;
 }
-#payload_settings { 
+#payload_settings {
 	border-width: 1px;
 }
 
@@ -527,7 +527,6 @@ table.mainTable thead tr:first-child th {
 
 .syncWrapper {
 	overflow: hidden;
-	width: 852px;
 	margin: 0 auto;
 	min-height:300px;
 	padding:10px 0;
@@ -535,7 +534,7 @@ table.mainTable thead tr:first-child th {
 
 .syncWrapper .site {
 	width: 42%;
-	background-color: rgba(0,0,0,0.2);
+
 	float:left;
 }
 .syncWrapper .gutter {
@@ -548,9 +547,49 @@ table.mainTable thead tr:first-child th {
 	border-radius: 4px;
 	box-shadow: 0 0 3px rgba(0,0,0,0.7)
 }
+.syncWrapper .site .site-header {
+	background-color: rgba(0,0,0,0.2);
+}
 
 .syncWrapper .site .site-header,
 .syncWrapper .gutter .gutter-header {
 	text-align: center;
+	padding: 17px 5px;
+}
+
+.sm-sync-block {
+	height:20px;
 	padding:5px;
+	text-align: center;
+	border-bottom:0;
+	background-color: rgba(0,0,0,0.1);
+	font-size: 1.4em;
+	margin-bottom:1px;
+	position: relative;
+
+}
+.sm-sync-block.blank {
+	background-color: transparent;
+}
+.sm-sync-btn {
+	position: absolute;
+	top:0;
+	bottom:0;
+	width:50%;
+	background-position: center center;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+.sm-sync-btn:hover {
+	background-color: #363636;
+}
+.sm-sync-btn.btn-left {
+	left:0;
+	right:auto;
+	background-image: url("../images/arrow-left.png");
+}
+.sm-sync-btn.btn-right {
+	right:0;
+	left:auto;
+	background-image: url("../images/arrow-right.png");
 }
