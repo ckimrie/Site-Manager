@@ -140,7 +140,8 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 		 * @return {[type]}          [description]
 		 */
 		this.renderComparison = function(data) {
-			var i, node,
+			var i,a, node,
+				here = this,
 				target_1 = this.site_1_node,
 				target_2 = this.site_2_node,
 				gutter  = this.gutter_node;
@@ -163,29 +164,38 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 						.html(data.site_1[i].blank ? "&nbsp;" : data.site_1[i].sync_label);
 				node.appendTo(target_1);
 
+
 				//Site 2
 				node = $(document.createElement("div"))
 						.addClass(data.site_2[i].blank ? "sm-sync-block blank" : "sm-sync-block")
 						.html(data.site_2[i].blank ? "&nbsp;" : data.site_2[i].sync_label);
 				node.appendTo(target_2);
 
+
 				//Gutter
 				node = $(document.createElement("div"))
 						.addClass("sm-sync-block");
 
+
 				// Render sync buttons in gutter
-				//
 				// Figure out what direction is allowed
 				if(!data.site_1[i].blank && data.site_2[i].blank) {
+
 					//Site 1 --> Site 2
-					node.append($(document.createElement("div")).addClass("sm-sync-btn btn-right"));
+					a = $(document.createElement("div")).addClass("sm-sync-btn btn-right");
+					here.bindSyncButton(a, "right", i);
+					node.append(a);
 				}
 				if(data.site_1[i].blank && !data.site_2[i].blank) {
+
 					//Site 1 <-- Site 2
-					node.append($(document.createElement("div")).addClass("sm-sync-btn btn-left"));
+					a = $(document.createElement("div")).addClass("sm-sync-btn btn-left");
+					here.bindSyncButton(a, "left", i);
+					node.append(a);
 				}
 				if(!data.site_1[i].blank && !data.site_2[i].blank) {
-					//Site 1 <-> Site 2
+
+					//Site 1 <-> Site 2   (nothing for now...)
 					//node.append($(document.createElement("div")).addClass("sm-sync-btn btn-left"));
 					//node.append($(document.createElement("div")).addClass("sm-sync-btn btn-right"));
 				}
@@ -196,7 +206,29 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 		};
 
 
+		/**
+		 * Binds SyncManager action to a sync button
+		 *
+		 * @author Christopher Imrie
+		 *
+		 * @param  {object}    node			Button node
+		 * @param  {string}    direction	Sync transfer direction (left/right)
+		 * @param  {integer}    key			Data row key
+		 * @return {null}
+		 */
+		this.bindSyncButton = function(node, direction, key) {
+			var here = this;
 
+			node.click(function(e) {
+				e.preventDefault();
+				here.sync.transfer(direction, key).done($.proxy(here, "syncComplete"));
+			});
+		};
+
+
+		this.syncComplete = function() {
+			this.site_selection_changed();
+		};
 
 
 		/**

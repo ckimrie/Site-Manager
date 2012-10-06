@@ -8,7 +8,7 @@ class Site_manager_server
 
 	var $EE;
 	var $version	= 0.1;
-	
+
 	var $response_code = 200;
 
 	function __construct()
@@ -19,7 +19,7 @@ class Site_manager_server
 		//TODO
 		//
 		//Validate authentication....
-		
+
 
 		//Set Site ID
 		$this->EE->load->model("local_data");
@@ -71,11 +71,11 @@ class Site_manager_server
         	if ($this->EE->config->item('admin_session_type') != 's')
 			{
 				$this->EE->functions->set_cookie($this->EE->session->c_expire , time(), "0");
-				$this->EE->functions->set_cookie($this->EE->session->c_uniqueid , $member->unique_id , "0");		
-				$this->EE->functions->set_cookie($this->EE->session->c_password , $member->password,  "0");	
+				$this->EE->functions->set_cookie($this->EE->session->c_uniqueid , $member->unique_id , "0");
+				$this->EE->functions->set_cookie($this->EE->session->c_password , $member->password,  "0");
 				$this->EE->functions->set_cookie($this->EE->session->c_anon , 1,  "0");
 			}
-			
+
 			if ( $this->EE->input->get("site_id") && is_numeric($this->EE->input->get("site_id")))
 			{
 				$this->EE->functions->set_cookie('cp_last_site_id', $this->EE->input->post('site_id'), 0);
@@ -94,10 +94,10 @@ class Site_manager_server
 	        $session_id = $authed->session_id();
 	        $index = "";
         }
-        
+
         $base = $this->EE->config->item("cp_url").$index;
         $base .= "?S=".$session_id."&D=cp&";
-		
+
 		if ($this->EE->config->item('admin_session_type') != 'c')
 		{
 			$base = preg_replace('/S=\d+/', 'S='.$session_id, $base);
@@ -107,7 +107,7 @@ class Site_manager_server
 		//echo $return_path;
 		$this->EE->functions->redirect($return_path);
     }
-	
+
 
 
 	public function config()
@@ -121,6 +121,13 @@ class Site_manager_server
 	public function channels()
 	{
 		$this->output($this->EE->local_data->channel_data());
+	}
+
+
+
+	public function categorygroups()
+	{
+		$this->output($this->EE->local_data->categorygroup_data());
 	}
 
 
@@ -145,6 +152,41 @@ class Site_manager_server
 
 
 
+
+
+
+	/**-----------------------------------------------------
+	 * Sync Methods
+	 * -----------------------------------------------------
+	 */
+
+
+
+
+	/**
+	 * Create a new Category Group
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return null
+	 */
+	public function create_categorygroup()
+	{
+		$data = array();
+		foreach ($_POST as $key => $value) {
+			$data[$key] = $this->EE->input->post($key);
+		}
+
+		$this->output($this->EE->local_data->create_categorygroup($data));
+	}
+
+
+	/**-----------------------------------------------------
+	 * Utilities
+	 * -----------------------------------------------------
+	 */
+
+
 	public function output($data=array())
 	{
 
@@ -154,9 +196,9 @@ class Site_manager_server
 
 		@header("Access-Control-Allow-Origin: *");
 		@header('Content-Type: application/json');
-		
-		
-		
+
+
+
 		exit($this->EE->javascript->generate_json($data, TRUE));
 	}
 }

@@ -2,10 +2,16 @@
 
 
 /**
-* 
-*/
+ * Local Data Model
+ *
+ * Used by controllers to examine and extract data about site this
+ * module has been installed in
+ *
+ * @author Christopher Imrie
+ */
 class Local_data extends CI_model
 {
+	//Public
 	var 	$EE;
 	var 	$site_id; 		//Sent with every API request
 
@@ -32,7 +38,24 @@ class Local_data extends CI_model
 
 
 
+	/**----------------------------------------------------
+	 * Public
+	 * ----------------------------------------------------
+	 */
 
+
+
+	/**
+	 * Get local config payload
+	 *
+	 * Creates an encoded payload that contains all configurations
+	 * needed in order to setup and communicate with the site this
+	 * module is installed in.
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return string
+	 */
 	public function get_setup_payload()
 	{
 		$c =& CI_Controller::get_instance();
@@ -55,9 +78,81 @@ class Local_data extends CI_model
 
 
 
+	/**
+	 * Category Group Data
+	 *
+	 * As well as the groups, it fetches the categories and fields and adds them
+	 * as arrays to each category group
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return array
+	 */
+	public function categorygroup_data()
+	{
+		//Fetch all the data we need
+		$categories 	= $this->EE->db->where("site_id", $this->site_id)
+										->get("categories")
+										->result_array();
+
+		$fields 		= $this->EE->db->where("site_id", $this->site_id)
+										->get("category_fields")
+										->result_array();
+
+		$categorygroups = $this->EE->db->where("site_id", $this->site_id)
+										->get("category_groups")
+										->result_array();
+
+		foreach ($categorygroups as $key => $group) {
+
+			//Attach Categories
+			$categorygroups[$key]['categories'] = array();
+			foreach ($categories as $c_key => $cat) {
+
+				//Category for current group?
+				if($cat['group_id'] == $group['group_id']) {
+
+					//Yes - add to category array in group
+					$categorygroups[$key]['categories'][] = $cat;
+
+					//Unset category to speed things up when processing large numbers of categories
+					unset($categories[$c_key]);
+				}
+			}
+
+			//Attach Fields
+			$categorygroups[$key]['fields'] = array();
+			foreach ($fields as $f_key => $field) {
+
+				//Category for current group?
+				if($field['group_id'] == $group['group_id']) {
+
+					//Yes - add to category array in group
+					$categorygroups[$key]['fields'][] = $field;
+
+					//Unset category to speed things up when processing large numbers of fields
+					unset($field[$f_key]);
+				}
+			}
+		}
+
+		return $categorygroups;
+	}
 
 
 
+
+
+	/**
+	 * Channel Data
+	 *
+	 * Instead of just fetching channel data, this also combines the
+	 * channel fields in a sub array of each channel
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return array
+	 */
 	public function channel_data()
 	{
 		$this->EE->load->driver("Channel_data");
@@ -85,7 +180,7 @@ class Local_data extends CI_model
 
 			foreach ($fields->result_array() as $key2 => $field) {
 				if($field['group_id'] == $channel['field_group']) {
-					$d['fields'][] = array(		
+					$d['fields'][] = array(
 						"field_id"				=> $field["field_id"],
 						"field_name"			=> $field["field_name"],
 						"field_label"			=> $field["field_label"],
@@ -101,6 +196,14 @@ class Local_data extends CI_model
 	}
 
 
+
+	/**
+	 * Channel Field Data
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return array
+	 */
 	public function channel_fields()
 	{
 		$this->EE->load->driver("Channel_data");
@@ -109,6 +212,22 @@ class Local_data extends CI_model
 
 
 
+	/**
+	 * Addon Data
+	 *
+	 * Because of the non-standardised way that EE checks, loads and handles different addon
+	 * types, this method is pretty complex and likely to need updating frequently.
+	 *
+	 * The logic here comes from examing (and copying frequently) the EE CP controllers
+	 * that power the "addons" section of the CP.
+	 *
+	 * //TODO
+	 * - Break up into multiple method fetches for each addon type
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return array
+	 */
 	public function addon_data()
 	{
 		$this->EE->load->helper('file');
@@ -193,7 +312,7 @@ class Local_data extends CI_model
 		}
 
 		foreach ($extension_files as $ext_name => $ext) {
-			
+
 			$this->EE->load->add_package_path($ext['path']);
 
 			$class_name = $ext['class'];
@@ -202,7 +321,7 @@ class Local_data extends CI_model
 			if ( ! class_exists($class_name))
 			{
 				@include($ext['path'].$ext['file']);
-				
+
 				if ( ! class_exists($class_name))
 				{
 					continue;
@@ -240,7 +359,7 @@ class Local_data extends CI_model
 		$fieldtypes = $this->EE->api_channel_fields->fetch_all_fieldtypes();
 		$installed_fts = $this->EE->addons->get_installed('fieldtypes');
 
-	
+
 
 		foreach ($fieldtypes as $fieldtype => $ft_info)
 		{
@@ -248,7 +367,7 @@ class Local_data extends CI_model
 			{
 				continue;
 			}
-			
+
 			$f = array();
 			$type = "third_party";
 
@@ -278,7 +397,7 @@ class Local_data extends CI_model
 
 
 		foreach ($plugins as $name => $plugin) {
-			
+
 			$p = array();
 			$type = "third_party";
 
@@ -318,7 +437,7 @@ class Local_data extends CI_model
 			$path = PATH_THIRD.strtolower($name).'/';
 
 			$this->EE->load->add_package_path($path, FALSE);
-			
+
 			$ACC = new $accessories[$name]['class']();
 
 			$this->EE->load->remove_package_path($path);
@@ -344,7 +463,52 @@ class Local_data extends CI_model
 
 
 
+	/**
+	 * Create a new Category Group
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  array       $data
+	 * @return array
+	 */
+	public function create_categorygroup($data=array())
+	{
+		$this->EE->load->model("category_model");
 
+		$this->EE->category_model->insert_category_group($data);
+
+		//Return a complete record
+		$data['site_id'] = $this->site_id;
+		$data['group_id'] = $this->EE->db->insert_id();
+
+		return $data;
+	}
+
+
+
+
+
+
+
+
+
+	/**----------------------------------------------------
+	 * Private
+	 * ----------------------------------------------------
+	 */
+
+
+
+
+
+
+	/**
+	 * Initialise the Model
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return null
+	 */
 	private function _init()
 	{
 		//Fetch module specific data
@@ -353,7 +517,7 @@ class Local_data extends CI_model
 		$this->_private_key = $q->private_key;
 		$this->_public_key = $q->public_key;
 		$this->_settings = $q->settings;
-		
+
 		//Site data
 		$this->_site = array(
 			"site_name" => $this->EE->config->item("site_name"),
@@ -366,6 +530,17 @@ class Local_data extends CI_model
 	}
 
 
+
+	/**
+	 * Get installed plugins
+	 *
+	 * Utility method used by addon_data method.  Scraped from
+	 * the EE CP plugin page controller
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return array
+	 */
 	private function _get_installed_plugins()
 	{
 		$this->EE->load->helper('file');
@@ -381,9 +556,9 @@ class Local_data extends CI_model
 		{
 			foreach ($list as $file)
 			{
-				if (strncasecmp($file, 'pi.', 3) == 0 && 
-					substr($file, -$ext_len) == '.php' && 
-					strlen($file) > 7 && 
+				if (strncasecmp($file, 'pi.', 3) == 0 &&
+					substr($file, -$ext_len) == '.php' &&
+					strlen($file) > 7 &&
 					in_array(substr($file, 3, -$ext_len), $this->core->native_plugins))
 				{
 					$plugin_files[$file] = PATH_PI.$file;
@@ -411,8 +586,8 @@ class Local_data extends CI_model
 					}
 
 					// we gots a plugin?
-					if (strncasecmp($file, 'pi.', 3) == 0 && 
-						substr($file, -$ext_len) == '.php' && 
+					if (strncasecmp($file, 'pi.', 3) == 0 &&
+						substr($file, -$ext_len) == '.php' &&
 						strlen($file) > strlen('pi.'.'.php'))
 					{
 						if (substr($file, 3, -$ext_len) == $pkg_name)
@@ -435,8 +610,8 @@ class Local_data extends CI_model
 			// Magpie maight already be in use for an accessory or other function
 			// If so, we still need the $plugin_info, so we'll open it up and
 			// harvest what we need. This is a special exception for Magpie.
-			if ($file == 'pi.magpie.php' && 
-				in_array($path, get_included_files()) && 
+			if ($file == 'pi.magpie.php' &&
+				in_array($path, get_included_files()) &&
 				class_exists('Magpie'))
 			{
 				$contents = file_get_contents($path);
@@ -476,6 +651,20 @@ class Local_data extends CI_model
 	}
 
 
+	/**
+	 * Fetch local settings from DB
+	 *
+	 * A little more complex that it first appears since we need to create a local
+	 * settings config if there is not one already.
+	 *
+	 * Using a teeny bit of recursion we create a new if needed that includes public/private
+	 * keys to be used for data transmission
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  integer      $site_id
+	 * @return object
+	 */
 	private function _fetch_site_db_data($site_id)
 	{
 		$q = $this->EE->db->get_where($this->_db_name, array("site_id" => $site_id));
@@ -487,7 +676,7 @@ class Local_data extends CI_model
 				"private_key" 	=> $this->_generate_key(),
 				"settings"		=> $this->_prep_settings_for_db(array())
 			);
-			
+
 			$this->EE->db->insert($this->_db_name, $data);
 			return $this->_fetch_site_db_data($site_id);
 		}
@@ -506,6 +695,13 @@ class Local_data extends CI_model
 	}
 
 
+	/**
+	 * Generate a unique 32 character key (for private/public key generation)
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return string
+	 */
 	private function _generate_key()
 	{
 		$c =& CI_Controller::get_instance();
@@ -513,22 +709,55 @@ class Local_data extends CI_model
 	}
 
 
-	private function _prep_settings_payload_for_transport($data='')
+	/**
+	 * Encode settings for transport (ie: a string that can be copied and pasted to site manager client)
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  array      $data
+	 * @return string
+	 */
+	private function _prep_settings_payload_for_transport($data=array())
 	{
 		return base64_encode(serialize($data));
 	}
 
 
+	/**
+	 * Encode settings for DB storage
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  array       $data
+	 * @return string
+	 */
 	private function _prep_settings_for_db($data=array())
 	{
 		return base64_encode(serialize($data));
 	}
 
-	private function _restore_settings_from_db($data=array())
+
+	/**
+	 * Decode settings from DB storage
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  string       $data
+	 * @return array
+	 */
+	private function _restore_settings_from_db($data="")
 	{
 		return unserialize(base64_decode($data));
 	}
 
+
+	/**
+	 * Fetch this modules' installed action ID (there is only one)
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return string
+	 */
 	private function _fetch_action_id()
 	{
 		return $this->EE->functions->insert_action_ids($this->EE->functions->fetch_action_id($this->_module_name, $this->_action_name));

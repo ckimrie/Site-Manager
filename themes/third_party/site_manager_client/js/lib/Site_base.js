@@ -78,8 +78,36 @@ define(['jquery'],function($) {
 	};
 
 
+	Site_base.post = function(method, data) {
+		var here = this,
+			def = new $.Deferred();
+
+		this._startedLoading();
+
+		$.ajax({
+			url: this.url(method),
+			type: "POST",
+			data: data,
+			success: function(data) {
+				def.resolve(data);
+
+				here._finishedLoading();
+			},
+			error: function(jqXHR, textStatus) {
+				def.reject(textStatus, jqXHR);
+
+				here.error = true;
+				here._finishedLoading();
+			},
+			dataType: "json"
+		});
+
+		return def;
+	};
+
+
 	Site_base.url = function(a) {
-		
+
 		return this.config.api_url += "&method="+a;
 	};
 

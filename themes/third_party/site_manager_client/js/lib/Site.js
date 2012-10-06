@@ -2,7 +2,7 @@
 define(['jquery', './Site_base'], function($, Site_base) {
 
 	function Site(site_config) {
-		
+
 		this.config = {};
 		this.parentDiv = $("body"); //Used for automatically updating status indicators
 
@@ -16,7 +16,7 @@ define(['jquery', './Site_base'], function($, Site_base) {
 	/**
 	 * Remote Resources
 	 */
-	
+
 	Site.fn.configuration = function() {
 		return this.get("config");
 	};
@@ -24,6 +24,10 @@ define(['jquery', './Site_base'], function($, Site_base) {
 
 	Site.fn.channels = function() {
 		return this.get("channels");
+	};
+
+	Site.fn.categorygroups = function() {
+		return this.get("categorygroups");
 	};
 
 	Site.fn.installation_details = function() {
@@ -35,6 +39,26 @@ define(['jquery', './Site_base'], function($, Site_base) {
 		return this.get("addons");
 	};
 
+
+
+	/**
+	 * Sync Methods
+	 */
+
+	Site.fn.syncCategoryGroup = function(data) {
+
+		//Remove data that we have added:
+		delete data.sync_label;
+		delete data.fields;
+		delete data.categories;
+
+
+		//Remove data hazardous to data integrity
+		delete data.group_id;
+		delete data.site_id;
+
+		return this.post("create_categorygroup", data);
+	};
 
 
 	/**

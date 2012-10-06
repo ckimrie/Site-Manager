@@ -2,8 +2,10 @@ define(['jquery'], function($) {
 
 	function SyncManager() {
 		this.sites = [];
+		this.comparisonData = {};
 		this.comparison_key = "";
 		this.sort_key = "";
+		this.criteria = "";
 	}
 
 
@@ -24,6 +26,64 @@ define(['jquery'], function($) {
 	};
 
 
+
+	/**
+	 * Initiate a sync transfer
+	 *
+	 * Dispatches sync transfer commands to the correct site method
+	 * and provides the data needed for transfer.
+	 *
+	 * Returns a deferred that fires when the sync has been finished and verified by the remote site.
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  {string}    direction Sync direction (left/right)
+	 * @param  {integer}    key      Key for data record being synced
+	 * @return {object}              jQuery Deferred
+	 */
+	SyncManager.prototype.transfer = function(direction, key) {
+		var from_data, from, to, method, d1
+			d2 = new $.Deferred();
+
+
+		//From and to where?
+		if(direction === "right") {
+			from_data = this.comparisonData.site_1[key];
+			from	= this.sites[0].site;
+			to		= this.sites[1].site;
+		} else {
+			from_data = this.comparisonData.site_2[key];
+			from	= this.sites[1].site;
+			to		= this.sites[0].site;
+		}
+
+		if (!from_data) {
+			alert("Error encountered while trying to sync data");
+			return;
+		}
+
+		//What is the site method we need?
+		if(this.criteria === "channels") {
+			d1 = to.syncChannel(from_data);
+		}
+		if(this.criteria === "fieldgroups") {
+			d1 = to.syncFieldGroup(from_data);
+		}
+		if(this.criteria === "categorygroups") {
+			d1 = to.syncCategoryGroup(from_data);
+		}
+
+		//Lets do it!
+		d1.done(function(data) {
+			console.log("Sync complete");
+			d2.resolve(data);
+		});
+
+		return d2;
+	};
+
+
+
 	/**
 	 * New comparison
 	 *
@@ -32,21 +92,23 @@ define(['jquery'], function($) {
 	 * @param  {string}    critera The criteria to use for comparision
 	 * @return {mixed}            -
 	 */
-	SyncManager.prototype.compare = function(critera) {
-		console.log("Compare", critera);
-		if(critera === "channels") {
+	SyncManager.prototype.compare = function(criteria) {
+
+		this.criteria = criteria;
+
+		if(criteria === "channels") {
 			this.comparison_key = "channel_name";
 			this.sort_key = "channel_title";
 
 			return this.compareData(this.sites[0].site.channels(), this.sites[1].site.channels());
 		}
-		if(critera === "fieldgroups") {
+		if(criteria === "fieldgroups") {
 			this.comparison_key = "group_name";
 			this.sort_key = "group_name";
 
 			return this.compareData(this.sites[0].site.fieldgroups(), this.sites[1].site.fieldgroups());
 		}
-		if(critera === "categorygroups") {
+		if(criteria === "categorygroups") {
 			this.comparison_key = "group_name";
 			this.sort_key = "group_name";
 
@@ -163,8 +225,8 @@ define(['jquery'], function($) {
 			data.site_1.sort($.proxy(here, "dataCompare"));
 			data.site_2.sort($.proxy(here, "dataCompare"));
 
-
-
+			here.comparisonData = data;
+			console.log(here.comparisonData);
 			def.resolve(data);
 		});
 
@@ -172,7 +234,17 @@ define(['jquery'], function($) {
 	};
 
 
-
+	/**
+	 * Sort Data
+	 *
+	 * Called by the array.sort() method.  When comparing data
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  {object}    a
+	 * @param  {object}    b
+	 * @return {integer}
+	 */
 	SyncManager.prototype.dataCompare = function(a,b) {
 		if (a[this.sort_key] < b[this.sort_key])
 			return -1;
