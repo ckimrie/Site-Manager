@@ -51,14 +51,14 @@ define(['jquery'],function($) {
 	};
 
 
-	Site_base.get = function(method) {
+	Site_base.get = function(method, params) {
 		var here = this,
 			def = new $.Deferred();
 
 		this._startedLoading();
 
 		$.ajax({
-			url: this.url(method),
+			url: this.url(method, params),
 			data: {},
 			success: function(data) {
 				def.resolve(data);
@@ -78,14 +78,14 @@ define(['jquery'],function($) {
 	};
 
 
-	Site_base.post = function(method, data) {
+	Site_base.post = function(method, data, params) {
 		var here = this,
 			def = new $.Deferred();
 
 		this._startedLoading();
 
 		$.ajax({
-			url: this.url(method),
+			url: this.url(method, params),
 			type: "POST",
 			data: data,
 			success: function(data) {
@@ -107,9 +107,15 @@ define(['jquery'],function($) {
 	};
 
 
-	Site_base.url = function(a) {
+	Site_base.url = function(a, params) {
+		var query = "";
 
-		return this.config.api_url + "&method="+a;
+		if(params) {
+			$.each(params, function(key, value) {
+				query += "&" + key + "=" + value;
+			});
+		}
+		return this.config.api_url + "&method=" + a + query;
 	};
 
 

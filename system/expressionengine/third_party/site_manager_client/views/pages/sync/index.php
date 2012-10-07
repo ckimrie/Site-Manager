@@ -16,8 +16,11 @@
 		<div class="gutter-header">
 			<select id="sm-sync_type" disabled>
 				<option value="channels">Channels</option>
+				<option value="fields">Fields</option>
 				<option value="fieldgroups">Field Groups</option>
 				<option value="categorygroups">Category Groups</option>
+			</select>
+			<select id="sm-fieldgroup">
 			</select>
 		</div>
 		<div id="sm-gutter-body"></div>

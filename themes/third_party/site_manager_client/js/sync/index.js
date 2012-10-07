@@ -12,15 +12,18 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 
 
 		//Storage
-		this.select1 = $("#sm-site1"),
-		this.select2 = $("#sm-site2"),
-		this.sync_type = $("#sm-sync_type"),
+		this.select1 = $("#sm-site1");
+		this.select2 = $("#sm-site2");
+		this.field_group_selector = $("#sm-fieldgroup");
+		this.site_1_selected_group_id = "";
+		this.site_2_selected_group_id = "";
+		this.sync_type = $("#sm-sync_type");
 		this.sync = null;
 		this.site_1 = null;
-		this.site_1_node = $("#sm-site1-body"),
+		this.site_1_node = $("#sm-site1-body");
 		this.site_2 = null;
-		this.site_2_node = $("#sm-site2-body"),
-		this.gutter_node = $("#sm-gutter-body"),
+		this.site_2_node = $("#sm-site2-body");
+		this.gutter_node = $("#sm-gutter-body");
 		this.all_sites = {};
 
 		$("#sm-refresh").click(function(e) {
@@ -71,7 +74,7 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 					there.site_1 = null;
 				}
 
-				there.site_selection_changed();
+				there.sync_type.trigger("change");
 			});
 
 			// Site Selection Change
@@ -82,11 +85,65 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 					there.site_2 = null;
 				}
 
-				there.site_selection_changed();
+				there.sync_type.trigger("change");
 			});
 
 			//Sync type change
 			here.sync_type.change(function() {
+				var overthere = there,
+					d = new $.Deferred();
+
+
+				//If user has selected "Fields"to sync, we need to figure out what field groups are in common
+				if($(this).val() === "fields") {
+
+					there.field_group_selector.show().parent().addClass("double");
+
+					//Fetch the fieldgroups from each site and populate the select list with groups present in BOTH sites.
+					$.when(overthere.site_1.fieldgroups(), overthere.site_2.fieldgroups()).done(function(site_1_fieldgroups, site_2_fieldgroups) {
+
+						var success = overthere.populateFieldGroupList(site_1_fieldgroups, site_2_fieldgroups);
+
+						if (success) {
+							d.resolve();
+						} else {
+							d.reject();
+						}
+					});
+
+				} else {
+					there.field_group_selector.hide().parent().removeClass("double");
+					d.resolve();
+				}
+
+				//When fieldgroups have been set
+				d.done(function() {
+					var option = overthere.field_group_selector.find("option:selected");
+					overthere.site_1_selected_group_id = option.data("site_1_group_id");
+					overthere.site_2_selected_group_id = option.data("site_2_group_id");
+
+					overthere.site_selection_changed();
+				});
+
+				//Field group match fail
+				d.fail(function() {
+					overthere.field_group_selector.hide();
+					overthere.site_1_node.empty();
+					overthere.site_2_node.empty();
+					overthere.gutter_node.empty();
+					overthere.site_1_selected_group_id = "";
+					overthere.site_2_selected_group_id = "";
+				});
+			});
+
+			//Field group selection change.  The group_id for each site is embedded in the
+			//option as a data attribute
+			here.field_group_selector.change(function() {
+				var option = $(this).find("option:selected");
+
+				there.site_1_selected_group_id = option.data("site_1_group_id");
+				there.site_2_selected_group_id = option.data("site_2_group_id");
+
 				there.site_selection_changed();
 			});
 		});
@@ -110,7 +167,8 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 		 * @return {null}
 		 */
 		this.site_selection_changed = function() {
-			var here = this;
+			var here = this,
+				d = new $.Deferred();
 
 			if(this.site_1 && this.site_2) {
 				this.sync_type.removeAttr("disabled");
@@ -119,11 +177,20 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 				this.sync.add(this.site_1, this.site_1_node);
 				this.sync.add(this.site_2, this.site_2_node);
 
+				if(this.sync_type.val() == "fields") {
+					this.sync.site_1_selected_group_id = this.site_1_selected_group_id;
+					this.sync.site_2_selected_group_id = this.site_2_selected_group_id;
+				}
 
 				this.sync.compare(this.sync_type.val()).done(function(data) {
 					here.renderComparison(data);
 				});
+
+
+
+
 			} else {
+				this.field_group_selector.hide();
 				this.sync_type.attr("disabled", "disabled");
 				this.sync = null;
 			}
@@ -145,7 +212,7 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 		 * @return {null}
 		 */
 		this.renderComparison = function(data) {
-			var i,a, node,
+			var i,a, node, meta,
 				here = this,
 				target_1 = this.site_1_node,
 				target_2 = this.site_2_node,
@@ -165,15 +232,22 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 			for (i = 0; i < data.site_1.length; i++) {
 				//Site 1
 				node = $(document.createElement("div"))
-						.addClass(data.site_1[i].blank ? "sm-sync-block blank" : "sm-sync-block")
-						.html(data.site_1[i].blank ? "&nbsp;" : data.site_1[i].sync_label);
+						.addClass(data.site_1[i].blank ? "sm-sync-block blank" : "sm-sync-block");
+
+				//Meta data
+				meta = data.site_1[i].meta_label ? "<span class='meta'>" + data.site_1[i].meta_label + "</span>" : "";
+				node.html(data.site_1[i].blank ? "&nbsp;" : data.site_1[i].sync_label + meta);
 				node.appendTo(target_1);
 
 
 				//Site 2
 				node = $(document.createElement("div"))
-						.addClass(data.site_2[i].blank ? "sm-sync-block blank" : "sm-sync-block")
-						.html(data.site_2[i].blank ? "&nbsp;" : data.site_2[i].sync_label);
+						.addClass(data.site_2[i].blank ? "sm-sync-block blank" : "sm-sync-block");
+
+				//Meta data
+				meta = data.site_2[i].meta_label ? "<span class='meta'>" + data.site_2[i].meta_label + "</span>" : "";
+				node.html(data.site_2[i].blank ? "&nbsp;" : data.site_2[i].sync_label + meta);
+
 				node.appendTo(target_2);
 
 
@@ -247,6 +321,18 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 		};
 
 
+
+
+
+		/**
+		 * Animate Sync Action
+		 *
+		 * @author Christopher Imrie
+		 *
+		 * @param  {string}    direction	Visual left/right sync direction
+		 * @param  {integer}    key			Row key for item being synced
+		 * @return {object}					jQuery deferred
+		 */
 		this.animateSync = function(direction, key) {
 			var total_block_height = 31,
 				left_start = "-138%",
@@ -280,6 +366,82 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 		};
 
 
+		/**
+		 * Populate Field Group Sub Selection Drop Down
+		 *
+		 * @author Christopher Imrie
+		 *
+		 * @param  {array}    a     Site 1 field groups
+		 * @param  {array}    b     Site 2 field groups
+		 * @return {boolean}        Success / failure
+		 */
+		this.populateFieldGroupList = function(a, b) {
+			var i, j, option, valid =[];
+
+			this.field_group_selector.empty();
+
+
+			//Cycle through both site field group lists and figure which they have in common
+			for(i = 0; i < a.length; i++) {
+				for(j = 0; j < b.length; j++) {
+					if (a[i].group_name === b[j].group_name) {
+						valid.push({
+							group_name : a[i].group_name,
+							site_1_group_id : a[i].group_id,
+							site_2_group_id : b[i].group_id
+						});
+					}
+				}
+			}
+
+			//No fieldgroups in common?
+			if(valid.length === 0) {
+				this.unableToSyncWarning("There are no field groups that match on either site.  Both sites must have at least one field group in common in order to sync fields");
+				return false;
+			}
+
+			//Loop through and create the valid group options
+			for(i = 0; i < valid.length; i++) {
+				option = $(document.createElement("option"))
+							.text(valid[i].group_name)
+							.data('site_1_group_id', valid[i].site_1_group_id)
+							.data('site_2_group_id', valid[i].site_2_group_id);
+				option.appendTo(this.field_group_selector);
+			}
+
+			//Setup initial selected values
+			this.site_1_selected_group_id = valid[0].site_1_group_id;
+			this.site_2_selected_group_id = valid[0].site_2_group_id;
+
+			return true;
+		};
+
+
+
+		/**
+		 * Display message when we sync items
+		 *
+		 * @author Christopher Imrie
+		 *
+		 * @param  {string}    msg
+		 * @return {null}
+		 */
+		this.unableToSyncWarning = function(msg) {
+			alert(msg);
+		};
+
+
+
+		/**
+		 * Sync Complete
+		 *
+		 * Fired after animation and remote confirmation of sync action.
+		 * At the moment it simply rebuilds the interface using fresh data
+		 *
+		 * @author Christopher Imrie
+		 *
+		 * @return {null}
+		 */
 		this.syncComplete = function() {
 			this.site_selection_changed();
 		};

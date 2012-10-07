@@ -131,6 +131,17 @@ class Site_manager_server
 	}
 
 
+	public function fieldgroups()
+	{
+		$this->output($this->EE->local_data->fieldgroup_data());
+	}
+
+	public function fields()
+	{
+		$group_id = $this->EE->input->get("group_id");
+		$this->output($this->EE->local_data->fieldgroup_field_data($group_id));
+	}
+
 
 	public function installation_details()
 	{
@@ -179,6 +190,50 @@ class Site_manager_server
 		}
 
 		$this->output($this->EE->local_data->create_categorygroup($data));
+	}
+
+
+	public function create_fieldgroup()
+	{
+		//Store this instance locally since we'll need to restore it later
+		$c = get_instance();
+
+		$data = array();
+		foreach ($_POST as $key => $value) {
+			$data[$key] = $this->EE->input->post($key);
+		}
+
+		//This method creates a new CI Controller instance which will
+		//detatch all our loaded resources.  Hence further down we rerun
+		//the constructor in order to reattach them
+		$a = $this->EE->local_data->create_fieldgroup($data);
+
+		//Reattach resources to this controller
+		$this->__construct();
+		$this->output($a);
+	}
+
+
+	public function create_field()
+	{
+		//Store this instance locally since we'll need to restore it later
+		$c = get_instance();
+
+		$data = array();
+
+		foreach ($_POST as $key => $value) {
+			$data[$key] = $this->EE->input->post($key);
+		}
+		$group_id = $this->EE->input->get("group_id");
+
+		//This method creates a new CI Controller instance which will
+		//detatch all our loaded resources.  Hence further down we rerun
+		//the constructor in order to reattach them
+		$a = $this->EE->local_data->create_field($group_id, $data);
+
+		//Reattach resources to this controller
+		$this->__construct();
+		$this->output($a);
 	}
 
 

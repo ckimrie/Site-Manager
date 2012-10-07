@@ -26,6 +26,14 @@ define(['jquery', './Site_base'], function($, Site_base) {
 		return this.get("channels");
 	};
 
+	Site.fn.fieldgroups = function() {
+		return this.get("fieldgroups");
+	};
+
+	Site.fn.fields = function(fieldgroup_id) {
+		return this.get("fields", {group_id : fieldgroup_id});
+	};
+
 	Site.fn.categorygroups = function() {
 		return this.get("categorygroups");
 	};
@@ -45,11 +53,21 @@ define(['jquery', './Site_base'], function($, Site_base) {
 	 * Sync Methods
 	 */
 
+	/**
+	 * Syncronise Category Groups and Categories
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  {object}     data
+	 * @return {object}		jQuery Deferred
+	 */
 	Site.fn.syncCategoryGroup = function(data) {
 
 		//Remove data that we have added:
 		delete data.sync_label;
+		delete data.meta_label;
 		delete data.fields;
+		delete data.total_categories;
 
 
 		//Remove data hazardous to data integrity
@@ -67,6 +85,36 @@ define(['jquery', './Site_base'], function($, Site_base) {
 		delete data.categories;
 
 		return this.post("create_categorygroup", data);
+	};
+
+
+	Site.fn.syncFieldGroup = function(data) {
+
+		//Remote data we have added
+		delete data.sync_label;
+		delete data.meta_label;
+
+		//Remove data hazardous to data integrity
+		delete data.group_id;
+
+
+		return this.post("create_fieldgroup", data);
+	};
+
+
+
+	Site.fn.syncField = function(group_id, data) {
+
+		//Remote data we have added
+		delete data.sync_label;
+		delete data.meta_label;
+
+		//Remove data hazardous to data integrity
+		delete data.field_id;
+		delete data.group_id;
+		delete data.site_id;
+
+		return this.post("create_field", data, {group_id : group_id});
 	};
 
 

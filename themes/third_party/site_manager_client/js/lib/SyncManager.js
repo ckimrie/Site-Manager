@@ -6,6 +6,8 @@ define(['jquery'], function($) {
 		this.comparison_key = "";
 		this.sort_key = "";
 		this.criteria = "";
+		this.site_1_selected_group_id = "";
+		this.site_2_selected_group_id = "";
 	}
 
 
@@ -42,7 +44,7 @@ define(['jquery'], function($) {
 	 * @return {object}              jQuery Deferred
 	 */
 	SyncManager.prototype.transfer = function(direction, key) {
-		var from_data, from, to, method, d1
+		var from_data, from, to, method, d1, group,
 			d2 = new $.Deferred();
 
 
@@ -72,10 +74,15 @@ define(['jquery'], function($) {
 		if(this.criteria === "categorygroups") {
 			d1 = to.syncCategoryGroup(from_data);
 		}
+		if(this.criteria === "fields") {
+
+			//If syncing a field, we need to know what field group
+			group = direction === "left" ? this.site_1_selected_group_id : this.site_2_selected_group_id;
+			d1 = to.syncField(group, from_data);
+		}
 
 		//Lets do it!
 		d1.done(function(data) {
-			console.log("Sync complete");
 			d2.resolve(data);
 		});
 
@@ -99,18 +106,28 @@ define(['jquery'], function($) {
 		if(criteria === "channels") {
 			this.comparison_key = "channel_name";
 			this.sort_key = "channel_title";
+			this.meta_key = "total_entries";
 
 			return this.compareData(this.sites[0].site.channels(), this.sites[1].site.channels());
+		}
+		if(criteria === "fields") {
+			this.comparison_key = "field_name";
+			this.sort_key = "field_label";
+			this.meta_key = "field_type";
+
+			return this.compareData(this.sites[0].site.fields(this.site_1_selected_group_id), this.sites[1].site.fields(this.site_2_selected_group_id));
 		}
 		if(criteria === "fieldgroups") {
 			this.comparison_key = "group_name";
 			this.sort_key = "group_name";
+			this.meta_key = "";
 
 			return this.compareData(this.sites[0].site.fieldgroups(), this.sites[1].site.fieldgroups());
 		}
 		if(criteria === "categorygroups") {
 			this.comparison_key = "group_name";
 			this.sort_key = "group_name";
+			this.meta_key = "total_categories";
 
 			return this.compareData(this.sites[0].site.categorygroups(), this.sites[1].site.categorygroups());
 		}
@@ -169,6 +186,7 @@ define(['jquery'], function($) {
 
 				//Add generalised label column based on sort_key
 				remote_data_1[i].sync_label = remote_data_1[i][here.sort_key];
+				remote_data_1[i].meta_label = remote_data_1[i][here.meta_key] || "";
 
 				//Add the left column
 				data.site_1.push(remote_data_1[i]);
@@ -181,6 +199,7 @@ define(['jquery'], function($) {
 					if (remote_data_2[j][here.comparison_key] === remote_data_1[i][here.comparison_key]) {
 						//Create generalised label based on sort key
 						remote_data_2[j].sync_label = remote_data_2[j][here.sort_key];
+						remote_data_2[j].meta_label = remote_data_2[j][here.meta_key] || "";
 
 						data.site_2.push(remote_data_2[j]);
 						blank = false;
@@ -207,6 +226,7 @@ define(['jquery'], function($) {
 
 				//Create generalised label based on sort key
 				remote_data_2[i].sync_label = remote_data_2[i][here.sort_key];
+				remote_data_2[i].meta_label = remote_data_2[i][here.meta_key] || "";
 
 				//Add the right column
 				data.site_2.push(remote_data_2[i]);
@@ -226,7 +246,6 @@ define(['jquery'], function($) {
 			data.site_2.sort($.proxy(here, "dataCompare"));
 
 			here.comparisonData = data;
-			console.log(here.comparisonData);
 			def.resolve(data);
 		});
 

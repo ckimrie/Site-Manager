@@ -106,6 +106,7 @@ class Local_data extends CI_model
 		foreach ($categorygroups as $key => $group) {
 
 			//Attach Categories
+
 			$categorygroups[$key]['categories'] = array();
 			foreach ($categories as $c_key => $cat) {
 
@@ -134,6 +135,8 @@ class Local_data extends CI_model
 					unset($field[$f_key]);
 				}
 			}
+
+			$categorygroups[$key]['total_categories'] = count($categorygroups[$key]['categories']);
 		}
 
 		return $categorygroups;
@@ -202,12 +205,42 @@ class Local_data extends CI_model
 	 *
 	 * @author Christopher Imrie
 	 *
-	 * @return array
+	 * @return object 		CI DB Result
 	 */
 	public function channel_fields()
 	{
 		$this->EE->load->driver("Channel_data");
 		return $this->EE->channel_data->get_fields();
+	}
+
+
+	/**
+	 * Fieldgroup Data
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return object      CI DB Result
+	 */
+	public function fieldgroup_data()
+	{
+		$this->EE->load->model("field_model");
+		return $this->EE->field_model->get_field_groups();
+	}
+
+
+	/**
+	 * Field Data
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  string      $group_id
+	 * @return object                	CI DB Result
+	 */
+	public function fieldgroup_field_data($group_id='')
+	{
+		$this->EE->load->model("field_model");
+		$custom_fields = $this->EE->field_model->get_fields($group_id, array('site_id' => $this->site_id));
+		return $custom_fields;
 	}
 
 
@@ -475,6 +508,8 @@ class Local_data extends CI_model
 	{
 		$categories = array();
 
+		if(!$data) show_error("No data provided");
+
 		$this->EE->load->model("category_model");
 
 		//Remove category data
@@ -484,7 +519,7 @@ class Local_data extends CI_model
 		}
 
 		//Legacy EE2 sites dont have the 'exclude_group' field
-		if(!$this->EE->db->field_exists("exclude_group")) {
+		if(!$this->EE->db->field_exists("exclude_group", "category_groups")) {
 			unset($data['exclude_group']);
 		}
 
@@ -503,6 +538,7 @@ class Local_data extends CI_model
 
 			$category['site_id'] = $this->site_id;
 			$category['group_id'] = $group_id;
+
 
 			$this->EE->db->insert("categories", $category);
 
@@ -532,6 +568,74 @@ class Local_data extends CI_model
 	}
 
 
+	/**
+	 * Create Field Group
+	 *
+	 * Use native EE Admin_content controller to trigger the creation of a new
+	 * field group.  Since native methods are being used here, all native trigger
+	 * points are fired, meaning EE is under the impression a valid, logged in user
+	 * is creating this field group.
+	 *
+	 * In order for the Controller to be fooled, we need to build our own POST array
+	 * since it will be accessing the raw post data submitted by the user
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  array      $data
+	 * @return array
+	 */
+	public function create_fieldgroup($data)
+	{
+		//Load admon content controller
+		$this->EE->load->file(PATH_THIRD.$this->_module_name."/classes/mock_admin_content.php");
+
+		if(!isset($data['group_name'])) show_error("Group name must be specified");
+
+		//Prep POST input
+		$_POST['group_name'] = $data['group_name'];
+
+		$c = new Mock_admin_content();
+		$c->field_group_update();
+
+		return array("success");
+	}
+
+
+
+	/**
+	 * Create Field
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  array       $data
+	 * @return array
+	 */
+	public function create_field($group_id, $data=array())
+	{
+		//Load admon content controller
+		$this->EE->load->file(PATH_THIRD.$this->_module_name."/classes/mock_admin_content.php");
+
+		//Decode the settings
+		$field_settings = "";
+		if(isset($data['field_settings'])) {
+			$field_settings = $this->_decode_field_settings($data['field_settings']);
+		}
+
+		//Prep POST input
+		$_POST = $data;
+		$_POST['group_id'] = $group_id;
+		$_POST['site_id'] = $this->site_id;
+
+		//Merge field settings into POST as if it has been submitted
+		if(is_array($field_settings)) {
+			$_POST = array_merge($_POST, $field_settings);
+		}
+
+		$c = new Mock_admin_content();
+		$c->field_update();
+
+		return array("success");
+	}
 
 
 
@@ -739,6 +843,20 @@ class Local_data extends CI_model
 		}
 
 		return $r;
+	}
+
+
+	/**
+	 * Decode field settings
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  string      $settings
+	 * @return array
+	 */
+	public function _decode_field_settings($settings='')
+	{
+		return unserialize(base64_decode($settings));
 	}
 
 

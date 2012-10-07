@@ -550,11 +550,23 @@ table.mainTable thead tr:first-child th {
 .syncWrapper .site .site-header {
 	background-color: rgba(0,0,0,0.2);
 }
-
+#sm-fieldgroup {
+	display: none;
+}
 .syncWrapper .site .site-header,
 .syncWrapper .gutter .gutter-header {
 	text-align: center;
 	padding: 17px 5px;
+	height:18px;
+}
+.syncWrapper .gutter .gutter-header.double select {
+	position: relative;
+	top: -15px;
+	display: block;
+	margin:0 auto;
+}
+#sm-fieldgroup {
+	top:-10px;
 }
 #sm-site1-body,
 #sm-site2-body {
@@ -575,6 +587,22 @@ table.mainTable thead tr:first-child th {
 }
 .sm-sync-block.blank {
 	background-color: transparent;
+}
+.sm-sync-block .meta {
+	position: absolute;
+	top:6px;
+	font-size: 0.7em;
+	background: rgba(0, 0, 0, 0.15);
+	padding: 2px 5px;
+	border-radius: 7px;
+	color: #EEE;
+	min-width: 15px;
+}
+#sm-site1-body .meta {
+	right:20px;
+}
+#sm-site2-body .meta {
+	left:20px;
 }
 .sm-sync-btn {
 	position: absolute;
