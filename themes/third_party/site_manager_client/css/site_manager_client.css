@@ -556,10 +556,15 @@ table.mainTable thead tr:first-child th {
 	text-align: center;
 	padding: 17px 5px;
 }
-
+#sm-site1-body,
+#sm-site2-body {
+	position: relative;
+	overflow: hidden;
+}
 .sm-sync-block {
 	height:20px;
-	padding:5px;
+	width: 100%;
+	padding:5px 0;
 	text-align: center;
 	border-bottom:0;
 	background-color: rgba(0,0,0,0.1);

@@ -482,7 +482,11 @@ class Local_data extends CI_model
 			$categories = $data['categories'];
 			unset($data['categories']);
 		}
-		var_dump($categories);
+
+		//Legacy EE2 sites dont have the 'exclude_group' field
+		if(!$this->EE->db->field_exists("exclude_group")) {
+			unset($data['exclude_group']);
+		}
 
 		$this->EE->category_model->insert_category_group($data);
 		$group_id = $this->EE->db->insert_id();

@@ -23,8 +23,13 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 		this.gutter_node = $("#sm-gutter-body"),
 		this.all_sites = {};
 
+		$("#sm-refresh").click(function(e) {
+			e.preventDefault();
+			here.site_selection_changed();
+		});
 
-		//Initialise eachone and add to select menus
+
+		//Initialise each one and add to select menus
 		$.each(site_configs, function(i, site_config) {
 
 			var there = here,
@@ -136,8 +141,8 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 		 *
 		 * @author Christopher Imrie
 		 *
-		 * @param  {[type]}    data  [description]
-		 * @return {[type]}          [description]
+		 * @param  {object}    data
+		 * @return {null}
 		 */
 		this.renderComparison = function(data) {
 			var i,a, node,
@@ -195,13 +200,13 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 				}
 				if(!data.site_1[i].blank && !data.site_2[i].blank) {
 
-					//Site 1 <-> Site 2   (nothing for now...)
+					//Site 1 <-> Site 2  (nothing for now...)
 					a = $(document.createElement("div")).addClass("sm-sync-btn btn-left");
 					here.bindSyncButton(a, "left", i);
-					node.append(a);
+					//node.append(a);
 					a = $(document.createElement("div")).addClass("sm-sync-btn btn-right");
 					here.bindSyncButton(a, "right", i);
-					node.append(a);
+					//node.append(a);
 				}
 				node.appendTo(gutter);
 			}
@@ -217,16 +222,61 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 		 *
 		 * @param  {object}    node			Button node
 		 * @param  {string}    direction	Sync transfer direction (left/right)
-		 * @param  {integer}    key			Data row key
+		 * @param  {integer}   key			Data row key
 		 * @return {null}
 		 */
 		this.bindSyncButton = function(node, direction, key) {
 			var here = this;
 
 			node.click(function(e) {
+				var there = here,
+					def;
 				e.preventDefault();
-				here.sync.transfer(direction, key).done($.proxy(here, "syncComplete"));
+
+				//Kick off the transfer
+				def = there.sync.transfer(direction, key);
+
+				//Start the animation
+				here.animateSync(direction, key).done(function() {
+
+					//Bind the sync complete after the animation has completed
+					def.done($.proxy(there, "syncComplete"));
+				});
+
 			});
+		};
+
+
+		this.animateSync = function(direction, key) {
+			var total_block_height = 31,
+				left_start = "-138%",
+				target = $("#sm-site2-body"),
+				left_finish = "0%",
+				node,
+				def = new $.Deferred();
+
+			if(direction == "left") {
+				left_start = "138%";
+				left_finish = "0%";
+				target = $("#sm-site1-body");
+
+				node = $("#sm-site2-body").find(".sm-sync-block").eq(key).clone();
+			} else {
+				node = $("#sm-site1-body").find(".sm-sync-block").eq(key).clone();
+			}
+
+			node.css({
+				"position" : "absolute",
+				"top" : total_block_height * key,
+				"left" : left_start
+			}).appendTo(target);
+			node.animate({
+				left : left_finish
+			}, 400, function() {
+				def.resolve();
+			});
+
+			return def;
 		};
 
 
