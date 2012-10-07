@@ -21,7 +21,6 @@ define(['jquery', './Site_base'], function($, Site_base) {
 		return this.get("config");
 	};
 
-
 	Site.fn.channels = function() {
 		return this.get("channels");
 	};

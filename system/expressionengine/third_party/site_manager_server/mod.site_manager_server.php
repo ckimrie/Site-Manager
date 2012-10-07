@@ -195,9 +195,6 @@ class Site_manager_server
 
 	public function create_fieldgroup()
 	{
-		//Store this instance locally since we'll need to restore it later
-		$c = get_instance();
-
 		$data = array();
 		foreach ($_POST as $key => $value) {
 			$data[$key] = $this->EE->input->post($key);
@@ -216,9 +213,6 @@ class Site_manager_server
 
 	public function create_field()
 	{
-		//Store this instance locally since we'll need to restore it later
-		$c = get_instance();
-
 		$data = array();
 
 		foreach ($_POST as $key => $value) {

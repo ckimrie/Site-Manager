@@ -89,12 +89,14 @@ define(['jquery'],function($) {
 			type: "POST",
 			data: data,
 			success: function(data) {
-				def.resolve(data);
-
+				if(data.success) {
+					def.resolve(data);
+				} else {
+					def.reject(data);
+				}
 				here._finishedLoading();
 			},
 			error: function(jqXHR, textStatus) {
-				console.log(arguments);
 				def.reject(textStatus, jqXHR);
 
 				here.error = true;

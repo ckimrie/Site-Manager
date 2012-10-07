@@ -86,6 +86,10 @@ define(['jquery'], function($) {
 			d2.resolve(data);
 		});
 
+		d1.fail(function(data) {
+			d2.reject(data);
+		});
+
 		return d2;
 	};
 
@@ -114,6 +118,7 @@ define(['jquery'], function($) {
 			this.comparison_key = "field_name";
 			this.sort_key = "field_label";
 			this.meta_key = "field_type";
+
 
 			return this.compareData(this.sites[0].site.fields(this.site_1_selected_group_id), this.sites[1].site.fields(this.site_2_selected_group_id));
 		}

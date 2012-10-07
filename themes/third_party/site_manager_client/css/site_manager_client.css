@@ -588,6 +588,10 @@ table.mainTable thead tr:first-child th {
 .sm-sync-block.blank {
 	background-color: transparent;
 }
+.sm-sync-block.error {
+	background-color: rgba(255,0,0,0.6);
+	color:#fff;
+}
 .sm-sync-block .meta {
 	position: absolute;
 	top:6px;

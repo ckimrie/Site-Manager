@@ -240,6 +240,12 @@ class Local_data extends CI_model
 	{
 		$this->EE->load->model("field_model");
 		$custom_fields = $this->EE->field_model->get_fields($group_id, array('site_id' => $this->site_id));
+
+		/**
+		 * Add extra data for special fields
+		 */
+		$custom_fields = $this->_include_special_field_data($custom_fields->result_array());
+
 		return $custom_fields;
 	}
 
@@ -597,7 +603,7 @@ class Local_data extends CI_model
 		$c = new Mock_admin_content();
 		$c->field_group_update();
 
-		return array("success");
+		return array("success" => true);
 	}
 
 
@@ -612,29 +618,91 @@ class Local_data extends CI_model
 	 */
 	public function create_field($group_id, $data=array())
 	{
+
 		//Load admon content controller
 		$this->EE->load->file(PATH_THIRD.$this->_module_name."/classes/mock_admin_content.php");
 
-		//Decode the settings
-		$field_settings = "";
-		if(isset($data['field_settings'])) {
-			$field_settings = $this->_decode_field_settings($data['field_settings']);
+
+		$extra = array();
+		if(isset($data['extra'])) {
+			$extra = $this->_decode_field_settings($data['extra']);
+			unset($data['extra']);
 		}
 
-		//Prep POST input
-		$_POST = $data;
-		$_POST['group_id'] = $group_id;
-		$_POST['site_id'] = $this->site_id;
 
-		//Merge field settings into POST as if it has been submitted
-		if(is_array($field_settings)) {
-			$_POST = array_merge($_POST, $field_settings);
+
+		//Verify the field exists and is installed in this site
+		if(!$this->_is_fieldtype_installed($data['field_type'])){
+			return $this->error("Fieldtype '".$data['field_type']."' is not installed on destination site.  Please install this fieldtype and try again.");
 		}
 
+
+		//OK, we create a dummy field via EE's APIs, so it does the heavy lifting with regards
+		//to DB manipulation and key matching.  Once we have an insert ID, we'll then replace this
+		//with the raw DB data from the remote site
+		$_POST = array(
+			"group_id" 						=> $group_id,
+			"site_id" 						=> $this->site_id,
+			"field_name" 					=> "temp".time(),
+			"field_label" 					=> "Placeholder",
+			"field_type" 					=> "text",
+			"field_order" 					=> 0,
+			"field_instructions" 			=> "",
+			"field_required"				=> "n",
+			"field_search"					=> "n",
+			"field_is_hidden"				=> "n",
+			"field_order"					=> 4,
+			"field_maxl"					=> "128",
+			"text_field_fmt"				=> "none",
+			"text_field_show_fmt"			=> "n",
+			"text_field_text_direction"		=> "ltr",
+			"text_field_content_type"		=> "all",
+			"text_field_show_smileys"		=> "n",
+			"text_field_show_glossary"		=> "n",
+			"text_field_show_spellcheck"	=> "n",
+			"text_field_show_file_selector"	=> "n"
+		);
+
+
+
+		//Get EE to create the field officially....
 		$c = new Mock_admin_content();
 		$c->field_update();
 
-		return array("success");
+
+		//What was the last field created ID?  We know there is one, so this is pretty safe...
+		$field_id = $this->EE->db->from("channel_fields")->order_by("field_id", "desc")->get()->row()->field_id;
+
+
+
+		//Prep data input
+		unset($data['field_id']);
+		$data['group_id'] = $group_id;
+		$data['site_id'] = $this->site_id;
+
+		//Make sure no DB errors by matching field names
+		$fields = $this->EE->db->list_fields("channel_fields");
+
+		foreach ($data as $key => $value) {
+			if(!in_array($key, $fields)){
+				unset($data[$key]);
+			}
+		}
+
+
+
+		//Update the field with the DB data from the remote site
+		$this->EE->db->where("field_id", $field_id);
+		$this->EE->db->update("channel_fields", $data);
+
+
+		//Any extra DB data sent with this field?
+		if($extra) {
+			$this->_rebuild_special_fields($field_id, $data['field_type'], $extra);
+		}
+
+
+		return array("success" => true);
 	}
 
 
@@ -650,6 +718,23 @@ class Local_data extends CI_model
 
 
 
+
+
+	/**
+	 * Standard Error response format
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  string      $msg
+	 * @return array
+	 */
+	public function error($msg='')
+	{
+		return array(
+			"success" => FALSE,
+			"error" => $msg
+		);
+	}
 
 
 
@@ -681,6 +766,125 @@ class Local_data extends CI_model
 	}
 
 
+
+
+
+	private function _include_special_field_data($custom_fields=array())
+	{
+		foreach ($custom_fields as $key => $field) {
+
+			if($field['field_type'] == "matrix") {
+				$custom_fields[$key]['extra'] = $this->_encode_field_settings($this->_include_matrix_field_data($field));
+			}
+		}
+
+		return $custom_fields;
+	}
+
+
+
+
+	private function _rebuild_special_fields($field_id, $type, $data=array())
+	{
+		if($type == "matrix") {
+			$this->_rebuild_matrix_data($field_id, $data);
+		}
+	}
+
+
+
+	private function _include_matrix_field_data($field=array())
+	{
+		$extra = array();
+
+		//DB Table Name as key
+		$extra['matrix_cols'] = $this->EE->db->where("site_id", $this->site_id)
+													->where("field_id", $field['field_id'])
+													->get("matrix_cols")
+													->result_array();
+
+		//Matrix stores data in field columns for each matrix column.  The column type is
+		//different for each matrix cell type.  Make a note of it here so we can copy
+		//at the other end
+		$extra['matrix_data'] = array();
+		$fields = $this->EE->db->field_data("matrix_data");
+		foreach ($fields as $key => $field) {
+			if(strpos($field->name, "col_id_") === 0) {
+				$id = str_replace("col_id_", "", $field->name);
+				$extra['matrix_data'][$id] = array(
+					"type" => $field->type,
+					"length" => $field->max_length
+				);
+			}
+
+		}
+		return $extra;
+	}
+
+
+
+	private function _rebuild_matrix_data($field_id, $data=array())
+	{
+		$col_ids = array();
+
+		//Sigh... DB Forge gets attached to CI instance, not EE
+		$this->EE->load->dbforge();
+		$c =& CI_Controller::get_instance();
+
+
+
+		foreach ($data['matrix_cols'] as $key => $row) {
+			$old_id = $row['col_id'];
+
+			//Matrix Cols Table
+			unset($row['col_id']);
+
+			$row['field_id'] = $field_id;
+			$row['site_id'] = $this->site_id;
+
+			$this->EE->db->insert("matrix_cols", $row);
+			$new_id = $this->EE->db->insert_id();
+
+
+
+			//Matrix Data Table
+			$cell = $data['matrix_data'][$old_id];
+			$fields = array(
+            	'col_id_'.$new_id => array(
+					'type' => $cell['type'] == "int" ? "INT" : "TEXT"
+				)
+    		);
+    		$c->dbforge->add_column("matrix_data", $fields);
+		}
+
+
+		foreach ($col_ids as $key => $col_id) {
+
+		}
+	}
+
+
+
+
+	/**
+	 * Verifies whether a fieldtype is installed
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  string      $field_name
+	 * @return boolean
+	 */
+	private function _is_fieldtype_installed($field_name='')
+	{
+		$this->EE->load->library("addons");
+		$installed_fts = $this->EE->addons->get_installed('fieldtypes');
+
+		if(isset($installed_fts[$field_name])) {
+			return TRUE;
+		}
+
+		return FALSE;
+	}
 
 	/**
 	 * Get installed plugins
@@ -857,6 +1061,20 @@ class Local_data extends CI_model
 	public function _decode_field_settings($settings='')
 	{
 		return unserialize(base64_decode($settings));
+	}
+
+
+	/**
+	 * Encode field settings
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  string      $settings
+	 * @return array
+	 */
+	public function _encode_field_settings($settings=array())
+	{
+		return base64_encode(serialize($settings));
 	}
 
 

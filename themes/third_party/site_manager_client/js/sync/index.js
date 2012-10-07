@@ -167,8 +167,7 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 		 * @return {null}
 		 */
 		this.site_selection_changed = function() {
-			var here = this,
-				d = new $.Deferred();
+			var here = this;
 
 			if(this.site_1 && this.site_2) {
 				this.sync_type.removeAttr("disabled");
@@ -213,6 +212,7 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 		 */
 		this.renderComparison = function(data) {
 			var i,a, node, meta,
+				d = new $.Deferred(),
 				here = this,
 				target_1 = this.site_1_node,
 				target_2 = this.site_2_node,
@@ -304,7 +304,10 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 
 			node.click(function(e) {
 				var there = here,
+					k = key,
+					dir = direction,
 					def;
+
 				e.preventDefault();
 
 				//Kick off the transfer
@@ -315,7 +318,10 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 
 					//Bind the sync complete after the animation has completed
 					def.done($.proxy(there, "syncComplete"));
+					def.fail($.proxy(there, "syncError"));
+
 				});
+
 
 			});
 		};
@@ -341,6 +347,10 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 				node,
 				def = new $.Deferred();
 
+			//Remove all current sync items in case
+			$(".sm-sync-block").removeClass("current-sync");
+
+
 			if(direction == "left") {
 				left_start = "138%";
 				left_finish = "0%";
@@ -350,6 +360,9 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 			} else {
 				node = $("#sm-site1-body").find(".sm-sync-block").eq(key).clone();
 			}
+
+			//So we can track and undo this if needed
+			node.addClass("current-sync");
 
 			node.css({
 				"position" : "absolute",
@@ -364,6 +377,19 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 
 			return def;
 		};
+
+
+
+		this.undoSyncAnimation = function() {
+			var def = new $.Deferred(),
+				node = $(".sm-sync-block").filter(".current-sync");
+
+			node.addClass("error");
+			$(node).fadeOut(1000, function(){
+				node.remove();
+			});
+		};
+
 
 
 		/**
@@ -388,7 +414,7 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 						valid.push({
 							group_name : a[i].group_name,
 							site_1_group_id : a[i].group_id,
-							site_2_group_id : b[i].group_id
+							site_2_group_id : b[j].group_id
 						});
 					}
 				}
@@ -427,7 +453,7 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 		 * @return {null}
 		 */
 		this.unableToSyncWarning = function(msg) {
-			alert(msg);
+			$.ee_notice(msg, {open: true, type:"error"});
 		};
 
 
@@ -444,6 +470,18 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 		 */
 		this.syncComplete = function() {
 			this.site_selection_changed();
+		};
+
+
+		this.syncError = function(data) {
+			var msg = "Unknown error encountered. Unable to sync.";
+			if(data.error) {
+				msg = data.error;
+			}
+
+			this.unableToSyncWarning(msg);
+
+			this.undoSyncAnimation();
 		};
 
 
