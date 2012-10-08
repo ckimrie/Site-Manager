@@ -10,9 +10,13 @@ class Site_manager_server
 	var $version	= 0.1;
 
 	var $response_code = 200;
+	static $private_key;
+	static $public_key;
 
-	function __construct()
+	function __construct($initialise = TRUE)
 	{
+		global $_POST;
+
 		$this->EE =& get_instance();
 
 
@@ -22,8 +26,29 @@ class Site_manager_server
 
 
 		//Set Site ID
+		$this->EE->load->helper("encryption");
 		$this->EE->load->model("local_data");
 		$this->EE->local_data->site_id = $this->EE->input->get("site_id");
+
+
+		//Public key correct?
+		if($this->EE->input->get("k") != self::$public_key){
+			$this->EE->output->set_status_header(500);
+			$this->output(array("success" => FALSE, "error" => "Invalid encryption key"));
+			exit;
+		}
+
+		//Is there post data to decrypt?
+		if($this->EE->input->post("payload")) {
+			$data = decrypt_payload(base64_decode($this->EE->input->post("payload")), self::$private_key);
+
+			$data = json_decode($data, TRUE);
+
+
+			if(is_array($data)) {
+				$_POST = $data;
+			}
+		}
 	}
 
 
@@ -44,15 +69,15 @@ class Site_manager_server
 
 	public function ping()
 	{
-		$this->output(array(array(
+		$this->output(array(
+			"success" => TRUE,
 			"app_version" => $this->EE->config->item("app_version")
-		)));
+		));
 	}
 
 
     public function login()
     {
-    	error_reporting(E_ALL);
         $user_id = $this->EE->input->get("user_id");
 
         $q = $this->EE->db->where("member_id", $user_id)->get("members");
@@ -173,6 +198,31 @@ class Site_manager_server
 
 
 
+	/**
+	 * Create Channel
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return null
+	 */
+	public function create_channel()
+	{
+		$data = array();
+
+		foreach ($_POST as $key => $value) {
+			$data[$key] = $this->EE->input->post($key);
+		}
+
+		//This method creates a new CI Controller instance which will
+		//detatch all our loaded resources.  Hence further down we rerun
+		//the constructor in order to reattach them
+		$a = $this->EE->local_data->create_channel($data);
+
+		//Reattach resources to this controller
+		$this->__construct();
+		$this->output($a);
+	}
+
 
 	/**
 	 * Create a new Category Group
@@ -206,7 +256,7 @@ class Site_manager_server
 		$a = $this->EE->local_data->create_fieldgroup($data);
 
 		//Reattach resources to this controller
-		$this->__construct();
+		$this->__construct(FALSE);
 		$this->output($a);
 	}
 
@@ -240,15 +290,15 @@ class Site_manager_server
 	public function output($data=array())
 	{
 
-
+		$this->EE->load->model('local_data');
 		$this->EE->load->library('javascript');
 		$this->EE->output->set_status_header($this->response_code);
 
 		@header("Access-Control-Allow-Origin: *");
-		@header('Content-Type: application/json');
+		@header('Content-Type: text/html');
 
+		$output = $this->EE->javascript->generate_json($data, TRUE);
 
-
-		exit($this->EE->javascript->generate_json($data, TRUE));
+		exit(base64_encode(encrypt_payload($output, self::$private_key)));
 	}
 }

@@ -19,12 +19,15 @@
 
 <script type="text/javascript">
 	window.SM = {};
-	window.SM.js_api = "<?php echo $js_api ?>"
+	window.SM.XID = "<?php echo $XID ?>";
+	window.SM.js_api = "<?php echo $js_api ?>";
+	window.SM.js_decryption_api = "<?php echo $js_decryption_api ?>";
+	window.SM.js_encryption_api = "<?php echo $js_encryption_api ?>";
 
 	define('site_configs', [], function() {
 		var a = [];
 		<?php foreach ($sites as $site) : ?>
-			a.push(<?php echo $site->js_config() ?>); 
+			a.push(<?php echo $site->js_config() ?>);
 		<?php endforeach; ?>
 
 		return a;

@@ -1,5 +1,5 @@
 
-define(['jquery', './Site_base'], function($, Site_base) {
+define(['require', 'jquery', './Site_base'], function(require, $, Site_base) {
 
 	function Site(site_config) {
 
@@ -7,6 +7,10 @@ define(['jquery', './Site_base'], function($, Site_base) {
 		this.parentDiv = $("body"); //Used for automatically updating status indicators
 
 		$.extend(this.config, site_config);
+
+		this.XID = SM.XID;
+		this.encryptionServiceUrl = SM.js_encryption_api + "&local_site_id="+this.config.site_id;
+		this.decryptionServiceUrl = SM.js_decryption_api + "&local_site_id="+this.config.site_id;
 	}
 
 	Site.prototype = Site_base;
@@ -52,8 +56,48 @@ define(['jquery', './Site_base'], function($, Site_base) {
 	 * Sync Methods
 	 */
 
+
+
+	Site.fn.syncChannel = function(data) {
+		//We need to fetch site 1 and 2's url data, so we have to fetch the current
+		//SM instance in order to access this without needing an extra HTTP request to
+		//remote site
+		var SyncManager = require("../lib/SyncManager"),
+			sm = SyncManager.getInstance();
+
+		//Remove data that we have added:
+		delete data.sync_label;
+		delete data.meta_label;
+		delete data.fields;
+
+
+		//Remove data hazardous to data integrity
+		delete data.channel_id;
+		delete data.site_id;
+
+		//Set certain fields to reasonable values
+		data.total_entries = "0";
+		data.total_entries = "0";
+
+		//Channel URL
+		if(sm.direction === "right") {
+			from	= sm.sites[0].site;
+			to 		= sm.sites[1].site;
+		} else {
+			from	= sm.sites[1].site;
+			to 		= sm.sites[0].site;
+		}
+		//Replace from base URL with to base URL
+		data.channel_url = String(data.channel_url).replace(from.config.base_url, to.config.base_url);
+
+
+		return this.post("create_channel", data);
+	};
+
+
+
 	/**
-	 * Syncronise Category Groups and Categories
+	 * Syncronise Category Group and Categories
 	 *
 	 * @author Christopher Imrie
 	 *
@@ -86,7 +130,14 @@ define(['jquery', './Site_base'], function($, Site_base) {
 		return this.post("create_categorygroup", data);
 	};
 
-
+	/**
+	 * Synchronise FieldGroup
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  {object}    data
+	 * @return {object}          jQuery Deferred
+	 */
 	Site.fn.syncFieldGroup = function(data) {
 
 		//Remote data we have added
@@ -101,7 +152,15 @@ define(['jquery', './Site_base'], function($, Site_base) {
 	};
 
 
-
+	/**
+	 * Synchronise Field
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  {integer}    group_id
+	 * @param  {object}		data
+	 * @return {object}             jQuery Deferred
+	 */
 	Site.fn.syncField = function(group_id, data) {
 
 		//Remote data we have added

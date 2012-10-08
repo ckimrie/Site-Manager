@@ -18,17 +18,17 @@
 				<span class="status connecting active"></span>
 				<span class="status offline"></span>
 			</div>
-	
+
 			<p class="meta"><a href="<?php echo $site->base_url() ?>" target="_blank"><?php echo $site->base_url() ?></a> &nbsp; &nbsp; &nbsp; &nbsp; <a href="<?php echo $site->cp_url() ?>" target="_blank">Control Panel</a> &nbsp; &nbsp; &nbsp; &nbsp; EE: <span class="app_version">-</span></p>
 
 				<div class="dynamicDataWrapper">
 				<dl id="channelTarget" class="dynamicData"></dl>
 				</div>
 
-				
+
 				<div class="channelTemplate channel">
 					<dt class="channel_title"></dt>
-					
+
 					<dd>
 						<table class="mainTable padTable statTable" border="0" cellpadding="0" cellspacing="0">
 							<tbody>
@@ -38,7 +38,7 @@
 									<th width="25%">Total Entries</th>
 									<td width="25%" class="total_entries">a</td>
 								</tr>
-								
+
 								<tr>
 									<th>Channel Name</th>
 									<td class="channel_name">a</td>
@@ -58,7 +58,7 @@
 								</tr>
 							</thead>
 							<tbody>
-							
+
 							</tbody>
 						</table>
 					</dd>
@@ -75,10 +75,13 @@
 
 <script type="text/javascript">
 	window.SM = {};
+	window.SM.XID = "<?php echo $XID ?>";
 	window.SM.js_api = "<?php echo $js_api ?>";
+	window.SM.js_decryption_api = "<?php echo $js_decryption_api ?>";
+	window.SM.js_encryption_api = "<?php echo $js_encryption_api ?>";
 	window.SM.site_id = <?php echo $site->id() ?>;
 
 	define('site_config', [], function() {
-		return <?php echo $site->js_config() ?>; 
+		return <?php echo $site->js_config() ?>;
 	});
 </script>

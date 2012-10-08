@@ -6,7 +6,7 @@
 			<li class="<?php if($nav['active']) echo "active"; ?>"><a href="<?php echo $nav['url'] ?>"><?php echo $nav['label'] ?></a></li>
 		<?php endforeach; ?>
 		</ul>
-		
+
 		<ul class="bottom">
 			<li><a href="<?php echo $delete_url ?>" onclick="return confirm('Are you sure you want to delete this site?');">Delete Site</a></li>
 		</ul>
@@ -34,7 +34,7 @@
 								<th>System Online</th>
 								<td class="is_system_on"></td>
 							</tr>
-							
+
 						</tbody>
 					</table>
 				</div>
@@ -46,11 +46,14 @@
 
 <script type="text/javascript">
 	window.SM = {};
+	window.SM.XID = "<?php echo $XID ?>";
 	window.SM.js_api = "<?php echo $js_api ?>";
+	window.SM.js_decryption_api = "<?php echo $js_decryption_api ?>";
+	window.SM.js_encryption_api = "<?php echo $js_encryption_api ?>";
 	window.SM.site_id = <?php echo $site->id() ?>;
 
 	define('site_config', [], function() {
-		return <?php echo $site->js_config() ?>; 
+		return <?php echo $site->js_config() ?>;
 	});
 
 </script>

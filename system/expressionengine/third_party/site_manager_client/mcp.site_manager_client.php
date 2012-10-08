@@ -3,7 +3,7 @@
 
 /**
  * Site Manager CP Controller
- * 
+ *
  * @author  Christopher Imrie
  */
 class Site_manager_client_mcp
@@ -14,11 +14,11 @@ class Site_manager_client_mcp
 
 	var $module_label = "Site Manager";
 	var $page_title = "Site Manager";
-	
+
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @author Christopher Imrie
 	 */
 	function __construct()
@@ -34,7 +34,7 @@ class Site_manager_client_mcp
 			show_error("The Site Manager module needs the <a href='https://github.com/ckimrie/RequireJS-for-EE'>RequireJS-for-EE</a> extension to be installed in order to function correctly.", 500, "Module Required");
 		}
 
-		
+
 		//CSS
 		$this->EE->cp->add_to_head("<link href='".$this->EE->config->item("theme_folder_url")."third_party/site_manager_client/css/site_manager_client.css' rel='stylesheet'/>");
 
@@ -44,7 +44,7 @@ class Site_manager_client_mcp
 		$this->EE->load->model("site_data");
 		$this->EE->load->helper("navigation");
 
-		
+
 	}
 
 
@@ -58,12 +58,12 @@ class Site_manager_client_mcp
 
 	/**
 	 * Module Index Page
-	 * 
+	 *
 	 * Displays a grid view of all sites currently configured for remote
 	 * management
-	 * 
+	 *
 	 * @author Christopher Imrie
-	 * @return null      
+	 * @return null
 	 */
 	public function index()
 	{
@@ -76,28 +76,28 @@ class Site_manager_client_mcp
 	}
 
 	/**
-	 * A multi stage page that presents a text box to accept encoded site config data 
+	 * A multi stage page that presents a text box to accept encoded site config data
 	 * and then on POST displays a form of the data decoded
-	 * 
+	 *
 	 * @author Christopher Imrie
-	 * 
+	 *
 	 * @return string
 	 */
 	public function add_site()
 	{
 		$data = array();
-		
+
 		$this->page_title = "Add Site";
-		
+
 		$this->EE->load->library("form_validation");
 		$this->EE->form_validation->set_error_delimiters('<p class="error">', '</p>');
 		$this->EE->form_validation->set_rules("site_settings", "Site Settings", "required|callback__valid_settings");
 		$this->EE->form_validation->set_message("_valid_settings", "The settings you have entered are invalid");
-		
+
 
 		if($this->EE->form_validation->run() !== FALSE) {
 			//Success!
-			
+
 			//Remember there could be more than one site!
 			$data['back_url'] = methodUrl("add_site");
 			$data['verify_site_form_declaration'] = $this->EE->functions->form_declaration(array(
@@ -107,7 +107,7 @@ class Site_manager_client_mcp
 				)
 			));
 			$data['sites'] = $this->EE->site_data->decode_settings_payload($this->EE->input->post("site_settings"));
-			
+
 			return $this->view("add_site/verify", $data);
 		}
 
@@ -118,7 +118,7 @@ class Site_manager_client_mcp
 				'XID' => XID_SECURE_HASH
 			)
 		));
-		
+
 		return $this->view("add_site/index", $data);
 	}
 
@@ -126,26 +126,26 @@ class Site_manager_client_mcp
 
 	/**
 	 * Create site function
-	 * 
+	 *
 	 * Accepts a POST array of site configuration data and then calls
 	 * on the site_data model to create each one.
-	 * 
+	 *
 	 * This page has no UI, it simple accepts data from the "add_site" page
-	 * 
-	 * TODO: 
-	 * - Add data validation 
-	 * 
+	 *
+	 * TODO:
+	 * - Add data validation
+	 *
 	 * @author Christopher Imrie
-	 * 
+	 *
 	 * @return null
 	 */
 	public function insert_site()
 	{
 		if(!$this->EE->input->post('sites')) show_error("No site data recieved");
-		
-		
+
+
 		foreach ($this->EE->input->post('sites', TRUE) as $key => $site) {
-			
+
 			$data = array(
 				"site_id"					=> $site['site_id'],
 				"public_key"				=> $site['public_key'],
@@ -160,11 +160,11 @@ class Site_manager_client_mcp
 			);
 
 			try {
-				$this->EE->site_data->newSite($data);	
+				$this->EE->site_data->newSite($data);
 			} catch (Exception $e) {
 				show_error($e->getMessage());
 			}
-			
+
 		}
 
 		redirectToMethod("index");
@@ -173,10 +173,10 @@ class Site_manager_client_mcp
 
 	/**
 	 * Site details - Index Page
-	 * 
+	 *
 	 * @author Christopher Imrie
-	 * 
-	 * @return string 
+	 *
+	 * @return string
 	 */
 	public function site_details()
 	{
@@ -204,15 +204,15 @@ class Site_manager_client_mcp
 
 	/**
 	 * Site details - Config Page
-	 * 
+	 *
 	 * @author Christopher Imrie
-	 * 
-	 * @return string 
+	 *
+	 * @return string
 	 */
 	public function site_details_config()
 	{
 		$site_id = $this->EE->input->get("site_id");
-		
+
 		//Page JS
 		Requirejs::load("third_party/site_manager_client/js/site_details/config");
 
@@ -231,15 +231,15 @@ class Site_manager_client_mcp
 
 	/**
 	 * Site details - Channels Page
-	 * 
+	 *
 	 * @author Christopher Imrie
-	 * 
-	 * @return string 
+	 *
+	 * @return string
 	 */
 	public function site_details_channels()
 	{
 		$site_id = $this->EE->input->get("site_id");
-		
+
 		//Page JS
 		Requirejs::load("third_party/site_manager_client/js/site_details/channels");
 
@@ -248,7 +248,7 @@ class Site_manager_client_mcp
 		$data['site'] = $this->EE->site_data->get($site_id);
 		$data['delete_url'] = methodUrl("delete_site", array("site_id" => $site_id));
 		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details_channels");
-		
+
 		$this->page_title = $data['site']->name();
 
 		return $this->view("site_details/channels", $data);
@@ -257,16 +257,16 @@ class Site_manager_client_mcp
 
 	/**
 	 * Site details - Addons Page
-	 * 
+	 *
 	 * @author Christopher Imrie
-	 * 
-	 * @return string 
+	 *
+	 * @return string
 	 */
 	public function site_details_addons()
 	{
 		$site_id = $this->EE->input->get("site_id");
 
-		//Page JS		
+		//Page JS
 		Requirejs::load("third_party/site_manager_client/js/site_details/addons");
 
 
@@ -283,10 +283,10 @@ class Site_manager_client_mcp
 
 	/**
 	 * License and EE version review page
-	 * 
+	 *
 	 * @author Christopher Imrie
-	 * 
-	 * @return string 
+	 *
+	 * @return string
 	 */
 	public function license_review()
 	{
@@ -295,7 +295,7 @@ class Site_manager_client_mcp
 
 
 		$data['sites'] = $this->EE->site_data->get_all();
-		
+
 		$this->page_title = "License Review";
 
 		return $this->view("index/license_review", $data);
@@ -305,10 +305,10 @@ class Site_manager_client_mcp
 
 	/**
 	 * Multi Site Sync Page
-	 * 
+	 *
 	 * @author Christopher Imrie
-	 * 
-	 * @return string 
+	 *
+	 * @return string
 	 */
 	public function sync()
 	{
@@ -317,7 +317,7 @@ class Site_manager_client_mcp
 
 
 		$data['sites'] = $this->EE->site_data->get_all();
-		
+
 		$this->page_title = "Synchronise";
 
 		return $this->view("sync/index", $data);
@@ -327,12 +327,12 @@ class Site_manager_client_mcp
 
 	/**
 	 * Delete a site
-	 * 
+	 *
 	 * Reads site_id GET variable to specify what site to delete
-	 * 
+	 *
 	 * @author Christopher Imrie
-	 * 
-	 * @return null 
+	 *
+	 * @return null
 	 */
 	public function delete_site()
 	{
@@ -349,16 +349,16 @@ class Site_manager_client_mcp
 
 	/**
 	 * Ajax Controller Delegation
-	 * 
+	 *
 	 * All ajax requests are routed through here and dispatched
 	 * to ajax.site_manager_clien.php sub controller
-	 * 
+	 *
 	 * Return data from subcontroller is output as JSON
 	 * Status header can be set by subcontroller (default 200)
-	 * 
+	 *
 	 * @author Christopher Imrie
-	 * 
-	 * @return null 
+	 *
+	 * @return null
 	 */
 	public function ajax()
 	{
@@ -373,10 +373,71 @@ class Site_manager_client_mcp
 		if ($this->EE->config->item('send_headers') == 'y')
 		{
 			@header('Content-Type: application/json');
-		
+
 		}
-		
+
 		exit($this->EE->javascript->generate_json($data, TRUE));
+	}
+
+
+
+	/**
+	 * Decryption Service
+	 *
+	 * Decrypts data sent by the remote site using the private encryption key
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return null
+	 */
+	public function decrypt()
+	{
+		$this->EE->load->helper("encryption");
+		$this->EE->load->library('javascript');
+
+		$site_id = $this->EE->input->get("local_site_id");
+		$site = $this->EE->site_data->get($site_id);
+
+		$data = $this->EE->input->post("data");
+		$data = decrypt_payload(base64_decode($data), $site->setting("private_key"));
+
+		$data = json_decode($data, TRUE);
+
+		@header('Content-Type: application/json');
+
+		exit($this->EE->javascript->generate_json($data, TRUE));
+	}
+
+
+	/**
+	 * Encryption Service
+	 *
+	 * Encrypts data to be sent to a remote site. Data is submitted via POST.
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return null
+	 */
+	public function encrypt()
+	{
+		$this->EE->load->helper("encryption");
+		$this->EE->load->library('javascript');
+
+		$site_id = $this->EE->input->get("local_site_id");
+		$site = $this->EE->site_data->get($site_id);
+
+
+		$data = $_POST;
+
+		$data = json_encode($data);
+
+		$data = base64_encode(encrypt_payload($data, $site->setting("private_key")));
+
+		@header('Content-Type: text/html');
+
+		exit($data);
+
+
 	}
 
 
@@ -388,13 +449,13 @@ class Site_manager_client_mcp
 
 	/**
 	 * Site Config Validation
-	 * 
+	 *
 	 * Needs to be public since its being called by the CI Form Validation library
-	 * 
+	 *
 	 * @author Christopher Imrie
-	 * 
+	 *
 	 * @param  string $str Encoded settings from remote site
-	 * @return boolean      
+	 * @return boolean
 	 */
 	public function _valid_settings($str='')
 	{
@@ -405,51 +466,54 @@ class Site_manager_client_mcp
 
 	/**
 	 * CP View Generator
-	 * 
+	 *
 	 * Convenience method that loads the requested view, sets page title
 	 * and loads various useful template vars
-	 * 
+	 *
 	 * @author Christopher Imrie
-	 * 
+	 *
 	 * @param  string $name Template name
-	 * @param  array  $data 
-	 * @return string       
+	 * @param  array  $data
+	 * @return string
 	 */
 	private function view($name='', $data=array())
 	{
 		$data['cp_page_title'] = $this->page_title;
 		$this->EE->cp->set_variable('cp_page_title', $this->page_title);
-		
+
 		//Top Bar navigation variables
 		$nav = array();
 		$nav['add_url'] 			= methodUrl("add_site");
 		$nav['license_review_url'] 	= methodUrl("license_review");
 		$nav['all_sites_url'] 		= methodUrl("index");
 		$nav['sync_url'] 			= methodUrl("sync");
+		$nav['XID'] 				= XID_SECURE_HASH;
 
 
 		//Add some useful vars to the main template data array
 		$data["js_api"] 			= methodUrl("ajax");
-		$data["navigation_top"]			= $this->EE->load->view("embeds/navigation-top", $nav, TRUE);
-		
+		$data["js_decryption_api"]  = methodUrl("decrypt");
+		$data["js_encryption_api"]  = methodUrl("encrypt");
+		$data["navigation_top"]		= $this->EE->load->view("embeds/navigation-top", $nav, TRUE);
+
 		//If title is not 'site manager' then add a breadcrumb, if not leave it as is
 		if($this->page_title != "Site Manager") {
 			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=site_manager_client', $this->module_label);
 		}
 
 
-		return $this->EE->load->view("pages/".$name, $data, TRUE);	
+		return $this->EE->load->view("pages/".$name, $data, TRUE);
 	}
 
 
 
 	/**
 	 * Top Bar Navigation
-	 * 
+	 *
 	 * @author Christopher Imrie
-	 * @param  integer $site_id 
-	 * @param  string $current 
-	 * @return array          
+	 * @param  integer $site_id
+	 * @param  string $current
+	 * @return array
 	 */
 	private function _site_detail_navigation($site_id, $current='')
 	{

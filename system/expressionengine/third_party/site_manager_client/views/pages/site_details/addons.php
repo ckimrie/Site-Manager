@@ -20,12 +20,12 @@
 			</div>
 
 			<p class="meta"><a href="<?php echo $site->base_url() ?>" target="_blank"><?php echo $site->base_url() ?></a> &nbsp; &nbsp; &nbsp; &nbsp; <a href="<?php echo $site->cp_url() ?>" target="_blank">Control Panel</a> &nbsp; &nbsp; &nbsp; &nbsp; EE: <span class="app_version">-</span></p>
-			
+
 			<div class="dynamicDataWrapper">
 				<div class="dynamicData">
 					<div class="third_party">
 						<h2>Third Party</h2>
-						
+
 						<dl>
 							<dt>Modules</dt>
 							<dd>
@@ -38,9 +38,9 @@
 										</tr>
 									</thead>
 									<tbody>
-										
+
 									</tbody>
-								</table>	
+								</table>
 							</dd>
 
 							<dt>Fieldtypes</dt>
@@ -54,9 +54,9 @@
 										</tr>
 									</thead>
 									<tbody>
-										
+
 									</tbody>
-								</table>	
+								</table>
 							</dd>
 
 							<dt>Extensions</dt>
@@ -70,9 +70,9 @@
 										</tr>
 									</thead>
 									<tbody>
-										
+
 									</tbody>
-								</table>	
+								</table>
 							</dd>
 
 
@@ -87,9 +87,9 @@
 										</tr>
 									</thead>
 									<tbody>
-										
+
 									</tbody>
-								</table>	
+								</table>
 							</dd>
 
 							<dt>Accessories</dt>
@@ -103,16 +103,16 @@
 										</tr>
 									</thead>
 									<tbody>
-										
+
 									</tbody>
-								</table>	
+								</table>
 							</dd>
 						</dl>
 					</div>
 
 					<div class="native">
 						<h2>Native</h2>
-						
+
 						<dl>
 							<dt>Modules</dt>
 							<dd>
@@ -125,9 +125,9 @@
 										</tr>
 									</thead>
 									<tbody>
-										
+
 									</tbody>
-								</table>	
+								</table>
 							</dd>
 
 							<dt>Fieldtypes</dt>
@@ -141,9 +141,9 @@
 										</tr>
 									</thead>
 									<tbody>
-										
+
 									</tbody>
-								</table>	
+								</table>
 							</dd>
 
 							<dt>Extensions</dt>
@@ -157,9 +157,9 @@
 										</tr>
 									</thead>
 									<tbody>
-										
+
 									</tbody>
-								</table>	
+								</table>
 							</dd>
 
 
@@ -174,9 +174,9 @@
 										</tr>
 									</thead>
 									<tbody>
-										
+
 									</tbody>
-								</table>	
+								</table>
 							</dd>
 
 							<dt>Accessories</dt>
@@ -190,9 +190,9 @@
 										</tr>
 									</thead>
 									<tbody>
-										
+
 									</tbody>
-								</table>	
+								</table>
 							</dd>
 						</dl>
 
@@ -215,10 +215,13 @@
 
 <script type="text/javascript">
 	window.SM = {};
+	window.SM.XID = "<?php echo $XID ?>";
 	window.SM.js_api = "<?php echo $js_api ?>";
+	window.SM.js_decryption_api = "<?php echo $js_decryption_api ?>";
+	window.SM.js_encryption_api = "<?php echo $js_encryption_api ?>";
 	window.SM.site_id = <?php echo $site->id() ?>;
 
 	define('site_config', [], function() {
-		return <?php echo $site->js_config() ?>; 
+		return <?php echo $site->js_config() ?>;
 	});
 </script>

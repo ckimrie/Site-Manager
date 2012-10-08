@@ -2,7 +2,7 @@
 
 
 /**
-* 
+*
 */
 class Site extends Remote_Object
 {
@@ -94,7 +94,8 @@ class Site extends Remote_Object
 			"base_url" => $this->base_url(),
 			"cp_url" => $this->cp_url(),
 			"local_url" => $this->local_url(),
-			"api_url" => $this->buildUrl()
+			"api_url" => $this->buildUrl(),
+			"public_key" => $this->setting("public_key")
 		);
 
 		return json_encode($a);
@@ -136,7 +137,7 @@ class Site extends Remote_Object
 			return false;
 		}
 		return preg_match($URL_FORMAT, $this->base_url());
-	
+
 	}
 
 
@@ -152,7 +153,7 @@ class Site extends Remote_Object
 	/**
 	 * Initialise the class
 	 * @param  object $db_object Database row object
-	 * @return null            
+	 * @return null
 	 */
 	private function _init($db_object)
 	{

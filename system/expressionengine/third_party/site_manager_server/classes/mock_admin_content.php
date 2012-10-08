@@ -49,10 +49,14 @@ class Mock_admin_content extends Admin_content
 
 
 		//Define some fake constants used for navigation
-		define("BASE", "");
+		if(!defined("BASE")){
+			define("BASE", "");
+		}
 
 		//Fire her up...
 		parent::__construct();
+
+		$this->load->model("local_data");
 	}
 
 

@@ -1,14 +1,31 @@
 define(['jquery'], function($) {
 
+	var instance;
+
 	function SyncManager() {
 		this.sites = [];
+		this.direction = "";
 		this.comparisonData = {};
 		this.comparison_key = "";
 		this.sort_key = "";
 		this.criteria = "";
 		this.site_1_selected_group_id = "";
 		this.site_2_selected_group_id = "";
+
+		instance = this;
 	}
+
+
+	/**
+	 * Get Sync Manager Instance
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return {object}
+	 */
+	SyncManager.getInstance = function() {
+		return instance;
+	};
 
 
 
@@ -46,6 +63,8 @@ define(['jquery'], function($) {
 	SyncManager.prototype.transfer = function(direction, key) {
 		var from_data, from, to, method, d1, group,
 			d2 = new $.Deferred();
+
+		this.direction = direction;
 
 
 		//From and to where?

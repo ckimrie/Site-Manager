@@ -7,11 +7,11 @@ define(["jquery", 'site_configs', "../lib/Site"], function($, site_configs, Site
 		var s = new Site(site_config);
 		s.setParentDiv($("#site-"+s.config.site_id));
 		s.ping().done(function(data){
-			s.parentDiv.find(".app_version").text(data[0].app_version);
+			s.parentDiv.find(".app_version").text(data.app_version);
 		});
 		sites.push(s);
 	});
-	
+
 
 
 

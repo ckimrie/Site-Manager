@@ -44,6 +44,16 @@ class Local_data extends CI_model
 	 */
 
 
+	public function public_key()
+	{
+		return $this->_public_key;
+	}
+
+	public function private_key()
+	{
+		return $this->_private_key;
+	}
+
 
 	/**
 	 * Get local config payload
@@ -159,6 +169,7 @@ class Local_data extends CI_model
 	public function channel_data()
 	{
 		$this->EE->load->driver("Channel_data");
+		$fieldgroups = $this->EE->channel_data->get_field_groups();
 		$fields = $this->EE->channel_data->get_fields();
 		$channels = $this->EE->channel_data->get_channels();
 
@@ -169,18 +180,10 @@ class Local_data extends CI_model
 		foreach ($channels->result_array() as $key => $channel) {
 			if($channel['site_id'] != $this->site_id) continue;
 
-			$d = array(
-				"channel_id"			=> $channel["channel_id"],
-				"site_id"				=> $channel["site_id"],
-				"channel_name"			=> $channel["channel_name"],
-				"channel_title"			=> $channel["channel_title"],
-				"channel_url"			=> $channel["channel_url"],
-				"total_entries"			=> $channel["total_entries"],
-				"total_comments"		=> $channel["total_comments"],
-				"field_group"			=> $channel['field_group'],
-				"fields"				=> array()
-			);
+			$d = $channel;
+			$d["fields"] = array();
 
+			//Fields
 			foreach ($fields->result_array() as $key2 => $field) {
 				if($field['group_id'] == $channel['field_group']) {
 					$d['fields'][] = array(
@@ -189,6 +192,15 @@ class Local_data extends CI_model
 						"field_label"			=> $field["field_label"],
 						"field_type"			=> $field["field_type"]
 					);
+				}
+			}
+
+			//Fieldgroup Name for later identification
+			$d['field_group_name'] = "";
+			foreach ($fieldgroups->result_array() as $key => $fieldgroup) {
+				if($fieldgroup['group_id'] == $channel['field_group']){
+					$d['field_group_name'] = $fieldgroup['group_name'];
+					break;
 				}
 			}
 
@@ -503,6 +515,62 @@ class Local_data extends CI_model
 
 
 	/**
+	 * Create Channel
+	 *
+	 * Still quite a bit to do here, but crucially it verifies and preserves
+	 * fieldgroup relationships.
+	 *
+	 * TODO:
+	 * - Validate/Create Status group
+	 * - Validate/Create category group
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  array       $data
+	 * @return array
+	 */
+	public function create_channel($data=array())
+	{
+		global $_POST;
+
+		//Load admon content controller
+		$this->EE->load->file(PATH_THIRD.$this->_module_name."/classes/mock_admin_content.php");
+
+		//Is there a field group?
+		if($data['field_group']) {
+
+			//Match fieldgroup ID.  If there is no fieldgroup, then we cannot proceed
+			$q = $this->EE->db->where("group_name", $data['field_group_name'])
+								->limit(1)
+								->where("site_id", $this->site_id)
+								->get("field_groups");
+
+			if($q->num_rows() == 0) {
+				return $this->error("The field group '".$data['field_group_name']."' could not be found on destination site.  Please create this field group and then try again.");
+			}
+			$data['field_group'] = $q->row()->group_id;
+		}
+
+		unset($data['field_group_name']);
+
+		$_POST = $data;
+
+		$c = new Mock_admin_content();
+		$c->channel_update();
+
+		//Now lets update with group assignments etc
+		$_POST = $data;
+		$_POST['channel_id'] = $this->EE->db->insert_id();
+		$c->channel_update_group_assignments();
+
+		return array("success" => TRUE);
+	}
+
+
+
+
+
+	/**
 	 * Create a new Category Group
 	 *
 	 * @author Christopher Imrie
@@ -753,6 +821,9 @@ class Local_data extends CI_model
 		$this->_private_key = $q->private_key;
 		$this->_public_key = $q->public_key;
 		$this->_settings = $q->settings;
+
+		Site_manager_server::$public_key = $this->_public_key;
+		Site_manager_server::$private_key = $this->_private_key;
 
 		//Site data
 		$this->_site = array(
