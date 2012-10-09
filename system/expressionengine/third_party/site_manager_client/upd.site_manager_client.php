@@ -10,13 +10,13 @@ class Site_manager_client_upd
 	var $version		= 0.1;
 	var $module_name 	= "Site_manager_client";
 	var $db_name		= "site_manager_sites";
-	
+
 	function __construct()
 	{
 
 		$this->EE =& get_instance();
 	}
-	
+
 	/**
 	 * Installer function
 	 *
@@ -24,7 +24,7 @@ class Site_manager_client_upd
 	 * @author Christopher Imrie
 	 **/
 	function install()
-	{		
+	{
 		$data = array(
 			'module_name'			=>	$this->module_name,
 			'module_version'		=>	$this->version,
@@ -34,7 +34,7 @@ class Site_manager_client_upd
 		$this->EE->db->insert('modules', $data);
 
 
-		
+
 		$this->EE->load->dbforge();
 		$fields = array(
 			"id" 		=> array(
@@ -63,10 +63,10 @@ class Site_manager_client_upd
 		$this->EE->dbforge->add_field($fields);
 		$this->EE->dbforge->add_key('id', TRUE);
 		$this->EE->dbforge->create_table($this->db_name);
-		
+
 		return TRUE;
 	}
-	
+
 
 
 	/**
@@ -80,7 +80,7 @@ class Site_manager_client_upd
 
 		return TRUE;
 	}
-	
+
 	/**
 	 * Uninstalls the module
 	 *
@@ -88,11 +88,15 @@ class Site_manager_client_upd
 	 * @author Christopher Imrie
 	 **/
 	function uninstall()
-	{		
+	{
 		$this->EE->db->where('module_name', $this->module_name);
 		$this->EE->db->delete('modules');
-		
+
+
+		$this->EE->load->dbforge();
+		$this->EE->dbforge->drop_table($this->db_name);
+
 		return TRUE;
 	}
-	
+
 }
