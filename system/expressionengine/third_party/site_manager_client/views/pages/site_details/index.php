@@ -1,4 +1,4 @@
-
+<?php echo $navigation_top ?>
 <div class="columns nav">
 	<div class="left">
 		<ul class="top">

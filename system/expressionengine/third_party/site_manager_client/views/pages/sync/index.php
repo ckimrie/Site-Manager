@@ -1,6 +1,6 @@
 <?php echo $navigation_top ?>
 
-<a href="#" id="sm-refresh">Refresh</a>
+<!--<a href="#" id="sm-refresh">Refresh</a>-->
 <div class="syncWrapper">
 
 	<div class="site left">

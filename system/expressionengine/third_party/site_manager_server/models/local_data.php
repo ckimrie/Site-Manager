@@ -551,7 +551,18 @@ class Local_data extends CI_model
 			$data['field_group'] = $q->row()->group_id;
 		}
 
-		unset($data['field_group_name']);
+
+		//Filter the input fields
+		$fields = $this->EE->db->list_fields("channels");
+		foreach ($data as $key => $value) {
+			if(!in_array($key, $fields)) {
+				unset($data[$key]);
+			}
+		}
+
+
+
+
 
 		$_POST = $data;
 
@@ -638,7 +649,7 @@ class Local_data extends CI_model
 		$data['site_id'] = $this->site_id;
 		$data['group_id'] = $group_id;
 
-		return $data;
+		return array("success" => TRUE);
 	}
 
 
@@ -822,6 +833,9 @@ class Local_data extends CI_model
 		$this->_public_key = $q->public_key;
 		$this->_settings = $q->settings;
 
+		if(!class_exists("Site_manager_server")) {
+			$this->EE->load->file(PATH_THIRD."site_manager_server/mod.site_manager_server.php");
+		}
 		Site_manager_server::$public_key = $this->_public_key;
 		Site_manager_server::$private_key = $this->_private_key;
 
