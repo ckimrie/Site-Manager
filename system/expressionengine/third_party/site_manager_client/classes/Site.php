@@ -71,7 +71,7 @@ class Site extends Remote_Object
 
     public function login_url()
     {
-        return $this->buildUrl("login", array("user_id" => $this->setting("user_id")));
+        return $this->buildUrl("login", array("user_id" => $this->setting("user_id"), "k" => $this->setting("public_key")));
     }
 
 

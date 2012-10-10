@@ -87,10 +87,13 @@
 	left:0;
 	right:0;
 	z-index:2;
-	opacity:0.8;
+	opacity:0.9;
 }
 #mainContent .sm-site:hover h3{
 	z-index: 5;
+}
+.sm-site:hover .thumbnail {
+	opacity: 0.2;
 }
 
 .mainHeading {
