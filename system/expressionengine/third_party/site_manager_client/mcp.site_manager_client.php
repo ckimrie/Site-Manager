@@ -286,6 +286,84 @@ class Site_manager_client_mcp
 	}
 
 
+
+	/**
+	 * Site details - Settings
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return string
+	 */
+	public function site_details_settings()
+	{
+		$site_id = $this->EE->input->get("site_id");
+
+		//Page JS
+		Requirejs::load("third_party/site_manager_client/js/site_details/index");
+
+
+		$data = array();
+		$data['site'] = $this->EE->site_data->get($site_id);
+		$data['update'] = $this->EE->input->get("update");
+		$data['delete_url'] = methodUrl("delete_site", array("site_id" => $site_id));
+		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details_addons");
+		$data['form_declaration'] = $this->EE->functions->form_declaration(array(
+			'action' => methodUrl("update_site_settings", array("site_id" => $site_id)),
+			"hidden_fields" => array(
+				'XID' => XID_SECURE_HASH
+			)
+		));
+
+
+		$this->page_title = $data['site']->name();
+
+		return $this->view("site_details/settings", $data);
+	}
+
+
+	public function update_site_settings()
+	{
+		if(! $this->EE->input->post('site_id')) show_error("No site data recieved");
+
+		if(
+			! $this->EE->input->post('site_id') ||
+			! $this->EE->input->post('public_key') ||
+			! $this->EE->input->post('private_key') ||
+			! $this->EE->input->post('cp_url') ||
+			! $this->EE->input->post('site_name') ||
+			! $this->EE->input->post('base_url') ||
+			! $this->EE->input->post('user_id') ||
+			! $this->EE->input->post('channel_nomenclature') ||
+			! $this->EE->input->post('action_id')
+		) {
+			show_error("All fields are required");
+		}
+
+		$site_id = $this->EE->input->get("site_id");
+		$data = array(
+			"site_id"					=> $this->EE->input->post('site_id'),
+			"public_key"				=> $this->EE->input->post('public_key'),
+			"private_key"				=> $this->EE->input->post('private_key'),
+			"cp_url"					=> $this->EE->input->post('cp_url'),
+			"site_name"					=> $this->EE->input->post('site_name'),
+			"base_url"					=> $this->EE->input->post('base_url'),
+			"index_page"				=> $this->EE->input->post('index_page'),
+			"user_id"					=> $this->EE->input->post('user_id'),
+			"channel_nomenclature"		=> $this->EE->input->post('channel_nomenclature'),
+			"action_id"					=> $this->EE->input->post('action_id')
+		);
+
+		try {
+			$this->EE->site_data->updateSite($site_id, $data);
+		} catch (Exception $e) {
+			show_error($e->getMessage());
+		}
+
+
+
+		redirectToMethod("site_details_settings", array("site_id" => $site_id, "update" => "success"));
+	}
+
 	/**
 	 * License and EE version review page
 	 *
@@ -542,6 +620,11 @@ class Site_manager_client_mcp
 										"active"=> $current == "site_details_addons",
 										"label" => "Addons",
 										"url" 	=> methodUrl("site_details_addons", array("site_id" => $site_id))
+									),
+			"site_details_settings" 	=> array(
+										"active"=> $current == "site_details_settings",
+										"label" => "Local Settings",
+										"url" 	=> methodUrl("site_details_settings", array("site_id" => $site_id))
 									)
 		);
 	}

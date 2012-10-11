@@ -2,9 +2,9 @@
 
 
 /**
-* 
+*
 */
-class Site_data extends CI_Model 
+class Site_data extends CI_Model
 {
 	var $EE;
 
@@ -33,7 +33,7 @@ class Site_data extends CI_Model
 	public function init()
 	{
 		//Initialise
-		Site_data::$_instance =& $this; 
+		Site_data::$_instance =& $this;
 
 		//Fetch installed sites
 		$this->get_all();
@@ -57,7 +57,7 @@ class Site_data extends CI_Model
 			$post[$key] = $c->security->xss_clean($row);
 		}
 
-	
+
 		$site_name = $post['site_name'];
 		$base_url = $post['base_url'];
 		unset($post['site_name']);
@@ -72,11 +72,40 @@ class Site_data extends CI_Model
 		);
 
 		$this->EE->db->insert($this->_db_name, $data);
-	
-		
+
+
 		return $this->EE->db->insert_id();
 	}
 
+
+
+	public function updateSite($site_id='', $post=array())
+	{
+		$c =& CI_Controller::get_instance();
+
+		//Sanitize everything first
+		foreach ($post as $key => $row) {
+			$post[$key] = $c->security->xss_clean($row);
+		}
+
+
+		$site_name = $post['site_name'];
+		$base_url = $post['base_url'];
+		unset($post['site_name']);
+		unset($post['base_url']);
+
+		$data = array(
+			"site_name" => $site_name,
+			"base_url" => $base_url,
+			"settings" 	=> $this->encode_settings_payload($post)
+		);
+
+		$this->EE->db->where("id", $site_id);
+		$this->EE->db->update($this->_db_name, $data);
+
+
+		return $site_id;
+	}
 
 
 	public function get_all()
@@ -85,7 +114,7 @@ class Site_data extends CI_Model
 		$q = $this->EE->db->get($this->_db_name)->result();
 
 		$sites = new Site_Collection();
-		
+
 		foreach ($q as $key => $row) {
 			$sites->add($row->id, $row);
 		}
@@ -106,7 +135,7 @@ class Site_data extends CI_Model
 
 		//Fetch installed sites
 		$q = $this->EE->db->get_where($this->_db_name, array("id" => $site_id))->result();
-		
+
 		foreach ($q as $key => $row) {
 			$this->_sites->add($row->id, $row);
 		}
@@ -118,7 +147,7 @@ class Site_data extends CI_Model
 	public function delete_site($site_id='')
 	{
 		if(!$site_id) return;
-		
+
 		$this->EE->db->where("id", $site_id);
 		$this->EE->db->delete("site_manager_sites");
 	}
