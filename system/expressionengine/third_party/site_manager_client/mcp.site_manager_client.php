@@ -29,6 +29,11 @@ class Site_manager_client_mcp
 		$this->ajax = new Site_manager_client_ajax();
 
 
+		//Must be super admin to login (Recommended by EL)
+		if($this->EE->session->userdata('group_id') == 2) {
+			show_error("Site Manager can only be accessed by Super Admins.");
+		}
+
 		//Ensure RequireJS is installed
 		if(!property_exists($this->EE, "requirejs")){
 			show_error("The Site Manager module needs the <a href='https://github.com/ckimrie/RequireJS-for-EE'>RequireJS-for-EE</a> extension to be installed in order to function correctly.", 500, "Module Required");
