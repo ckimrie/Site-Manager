@@ -3,10 +3,12 @@
 <table class="mainTable padTable" cellpadding="0" cellspacing="0">
 	<thead>
 		<tr>
-			<th width="50"></th>
+			<th width="50">Status</th>
+			<th width="80">Version</th>
 			<th >Name</th>
 			<th width="250">License Number</th>
-			<th width="80">EE Version</th>
+			<th></th>
+			<th></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -19,9 +21,11 @@
 				<span class="status connecting active"></span>
 				<span class="status offline"></span>
 			</td>
-			<td><?php echo $site->name() ?></td>
-			<td class="license_number"></td>
 			<td class="app_version"></td>
+			<td><a href="<?php echo $site->local_url() ?>"><?php echo $site->name() ?></a></td>
+			<td class="license_number"></td>
+			<td width="50"><a href="<?php echo $site->base_url() ?>">View</a></td>
+			<td width="50"><a href="<?php echo $site->login_url() ?>">Login</a></td>
 		</tr>
 		<?php endforeach ?>
 	</tbody>
