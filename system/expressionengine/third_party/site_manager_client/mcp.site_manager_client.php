@@ -306,7 +306,7 @@ class Site_manager_client_mcp
 		$data['site'] = $this->EE->site_data->get($site_id);
 		$data['update'] = $this->EE->input->get("update");
 		$data['delete_url'] = methodUrl("delete_site", array("site_id" => $site_id));
-		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details_addons");
+		$data['navigation'] = $this->_site_detail_navigation($site_id, "site_details_settings");
 		$data['form_declaration'] = $this->EE->functions->form_declaration(array(
 			'action' => methodUrl("update_site_settings", array("site_id" => $site_id)),
 			"hidden_fields" => array(
@@ -401,7 +401,7 @@ class Site_manager_client_mcp
 
 		$data['sites'] = $this->EE->site_data->get_all();
 
-		$this->page_title = "Synchronise";
+		$this->page_title = "Sync Data";
 
 		return $this->view("sync/index", $data);
 	}

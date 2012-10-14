@@ -206,7 +206,8 @@ define(['jquery'],function($) {
 				//Decryption service choked...
 				d3.fail(function(jqXHR, textStatus) {
 					d1_proxy_2.reject(textStatus, jqXHR);
-console.log("decryption choke")
+
+					over_there.errorMessage("Error encountered while trying to decrypt data: " + textStatus);
 					over_there.error = true;
 					over_there._finishedLoading();
 				});
@@ -215,7 +216,9 @@ console.log("decryption choke")
 			//Remote server choked
 			d3.fail(function(jqXHR, textStatus) {
 				d1_proxy.reject(textStatus, jqXHR);
-console.log("remote server choke")
+
+				there.errorMessage("The remote site returned an error as a response: " + textStatus);
+
 				there.error = true;
 				there._finishedLoading();
 			});
@@ -225,7 +228,8 @@ console.log("remote server choke")
 		//Encryption server choked
 		d2.fail(function(jqXHR, textStatus) {
 			d1.reject(textStatus, jqXHR);
-			console.log("encryption choke")
+
+			here.errorMessage("Error encountered while trying to encrypt data: " + textStatus);
 
 			here.error = true;
 			here._finishedLoading();
@@ -235,6 +239,11 @@ console.log("remote server choke")
 
 
 		return d1;
+	};
+
+
+	Site_base.errorMessage = function(msg) {
+		$.ee_notice(msg, {type:"error"});
 	};
 
 

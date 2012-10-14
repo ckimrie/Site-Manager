@@ -1,7 +1,7 @@
 <?php echo $navigation_top ?>
 
 <!--<a href="#" id="sm-refresh">Refresh</a>-->
-<div class="syncWrapper">
+<div class="syncWrapper" id="syncWrapper">
 
 	<div class="site left">
 		<div class="site-header">
@@ -33,6 +33,9 @@
 			</select>
 		</div>
 		<div id="sm-site2-body"></div>
+	</div>
+	<div class="no-results">
+		<p>No Items Found</p>
 	</div>
 </div>
 

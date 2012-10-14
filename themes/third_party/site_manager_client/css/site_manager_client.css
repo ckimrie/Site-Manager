@@ -522,19 +522,23 @@ table.mainTable thead tr:first-child th {
 
 /* Sync */
 
-.syncWrapper {
+#syncWrapper {
 	overflow: hidden;
 	margin: 0 auto;
 	min-height:300px;
 	padding:10px 0;
+	background: url(../images/loading.gif) no-repeat -100px center;
+}
+#syncWrapper.loading {
+	background-position: center center;
 }
 
-.syncWrapper .site {
+#syncWrapper .site {
 	width: 42%;
 
 	float:left;
 }
-.syncWrapper .gutter {
+#syncWrapper .gutter {
 	width: 16%;
 	min-height:10px;
 	float:left;
@@ -544,26 +548,46 @@ table.mainTable thead tr:first-child th {
 	border-radius: 4px;
 	box-shadow: 0 0 3px rgba(0,0,0,0.7)
 }
-.syncWrapper .site .site-header {
+#syncWrapper .site .site-header {
 	background-color: rgba(0,0,0,0.2);
 }
 #sm-fieldgroup {
 	display: none;
 }
-.syncWrapper .site .site-header,
-.syncWrapper .gutter .gutter-header {
+#syncWrapper .site .site-header,
+#syncWrapper .gutter .gutter-header {
 	text-align: center;
 	padding: 17px 5px;
 	height:18px;
 }
-.syncWrapper .gutter .gutter-header.double select {
+#syncWrapper .site.left .site-header {
+	border-radius: 5px 0 0 0;
+}
+#syncWrapper .site.right .site-header {
+	border-radius: 0 5px 0 0;
+}
+#syncWrapper .gutter .gutter-header.double select {
 	position: relative;
 	top: -15px;
 	display: block;
 	margin:0 auto;
 }
-#sm-fieldgroup {
-	top:-10px;
+#syncWrapper .no-results {
+	display: none;
+	float: left;
+	width: 100%;
+	text-align: center;
+	font-weight: bold;
+	opacity: 1;
+	color: rgba(0, 0, 0, 0.2);
+	font-size: 1.5em;
+	padding: 20px 0;
+}
+#syncWrapper.no-results .no-results {
+	display: block;
+}
+#syncWrapper .gutter .gutter-header.double #sm-fieldgroup {
+	margin-top: 7px;
 }
 #sm-site1-body,
 #sm-site2-body {

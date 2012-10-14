@@ -15,6 +15,7 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 
 
 		//Storage
+		this.wrapper = $("#syncWrapper");
 		this.select1 = $("#sm-site1");
 		this.select2 = $("#sm-site2");
 		this.field_group_selector = $("#sm-fieldgroup");
@@ -175,6 +176,14 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 			if(this.site_1 && this.site_2) {
 				this.sync_type.removeAttr("disabled");
 
+				//Loading indicator
+				this.wrapper.addClass("loading");
+
+				//Clearout the current displayed items
+				this.site_1_node.empty();
+				this.site_2_node.empty();
+				this.gutter_node.empty();
+
 				this.sync = new SyncManager();
 				this.sync.add(this.site_1, this.site_1_node);
 				this.sync.add(this.site_2, this.site_2_node);
@@ -186,6 +195,7 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 
 				this.sync.compare(this.sync_type.val()).done(function(data) {
 					here.renderComparison(data);
+					here.wrapper.removeClass("loading");
 				});
 
 
@@ -222,9 +232,7 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 				gutter  = this.gutter_node;
 
 
-			target_1.empty();
-			target_2.empty();
-			gutter.empty();
+			this.wrapper.removeClass("no-results");
 
 			//Just in case somethings gone wrong with the comparison
 			if(data.site_1.length !== data.site_2.length) {
@@ -286,6 +294,11 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 					//node.append(a);
 				}
 				node.appendTo(gutter);
+			}
+
+			//No Results?
+			if(data.site_1.length == 0 && data.site_1.length == 0) {
+				this.wrapper.addClass("no-results");
 			}
 
 
