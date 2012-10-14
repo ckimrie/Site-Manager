@@ -28,7 +28,7 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 		this.site_2 = null;
 		this.site_2_node = $("#sm-site2-body");
 		this.gutter_node = $("#sm-gutter-body");
-		this.all_sites = {};
+		this.all_sites = [];
 
 		$("#sm-refresh").click(function(e) {
 			e.preventDefault();
@@ -50,8 +50,10 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 			s.setParentDiv(document.createElement("div"));
 
 			//Fetch license
-			s.ping().done(function(data) {
-				there.all_sites['s'+s.config.site_id] = s;
+			s.ping().fail(function() {
+				there.site_loaded();
+			}).done(function(data) {
+				there.all_sites.push(s);
 			}).then(function() {
 				there.site_loaded();
 			});
@@ -62,13 +64,33 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 
 		//When all sites loaded, add them to the DOM
 		sites_ready.done(function() {
-			var there = here;
+			var ordered = [],
+				there = here;
+
+			$.each(here.all_sites, function(i, s) {
+				ordered.push({
+					"id" :  s.config.site_id,
+					"name" : s.config.site_name
+				});
+			});
+
+
+			ordered.sort(function(a, b) {
+				if(a.name > b.name) return +1;
+				if(a.name < b.name) return -1;
+				return 0;
+			});
+
 
 			//Add to DOM
-			$.each(here.all_sites, function(i, s) {
-				there.select1.append($(document.createElement("option")).text(s.config.site_name).val('s' + s.config.site_id));
-				there.select2.append($(document.createElement("option")).text(s.config.site_name).val('s' + s.config.site_id));
-			});
+			for(var i = 0; i < ordered.length; i++) {
+				there.select1.append($(document.createElement("option")).text(ordered[i].name).val('s' + ordered[i].id));
+				there.select2.append($(document.createElement("option")).text(ordered[i].name).val('s' + ordered[i].id));
+			}
+
+			//Display the UI
+			here.wrapper.removeClass("initialLoad");
+
 
 			// Site Selection Change
 			here.select1.change(function() {

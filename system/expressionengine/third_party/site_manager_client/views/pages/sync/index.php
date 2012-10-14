@@ -1,7 +1,7 @@
 <?php echo $navigation_top ?>
 
 <!--<a href="#" id="sm-refresh">Refresh</a>-->
-<div class="syncWrapper" id="syncWrapper">
+<div class="syncWrapper initialLoad" id="syncWrapper">
 
 	<div class="site left">
 		<div class="site-header">

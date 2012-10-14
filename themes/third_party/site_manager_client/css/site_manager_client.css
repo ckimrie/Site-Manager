@@ -529,10 +529,16 @@ table.mainTable thead tr:first-child th {
 	padding:10px 0;
 	background: url(../images/loading.gif) no-repeat -100px center;
 }
-#syncWrapper.loading {
-	background-position: center center;
+#syncWrapper.loading,
+#syncWrapper.initialLoad {
+	background-position: center 100px;
 }
-
+#syncWrapper.initialLoad {
+	background-position: center 50px;
+}
+#syncWrapper.initialLoad * {
+	display: none;
+}
 #syncWrapper .site {
 	width: 42%;
 
