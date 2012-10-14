@@ -1,5 +1,8 @@
 define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function($, site_configs, Site, SyncManager) {
 
+	/**
+	 * Constructor
+	 */
 	function Sync() {
 
 		var //Config

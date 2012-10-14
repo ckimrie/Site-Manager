@@ -2,6 +2,9 @@ define(['jquery'], function($) {
 
 	var instance;
 
+	/**
+	 * Constructor
+	 */
 	function SyncManager() {
 		this.sites = [];
 		this.direction = "";
