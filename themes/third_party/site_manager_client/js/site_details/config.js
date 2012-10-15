@@ -5,7 +5,9 @@ define(["jquery", 'site_config', "../lib/Site"], function($, site_config, Site) 
 		target = $("#target");
 
 	//Ping Site
-	site.ping();
+	site.ping().done(function(data) {
+		$(".app_version").text(data.app_version);
+	});
 
 	//Site configuration
 	site.configuration().done(function(data) {
@@ -52,7 +54,7 @@ define(["jquery", 'site_config', "../lib/Site"], function($, site_config, Site) 
 			tr.append(td2);
 			tr.appendTo(otherBody);
 		});
-		
+
 		urlTable.appendTo(target).show();
 		pathTable.appendTo(target).show();
 		otherTable.appendTo(target).show();
@@ -66,7 +68,7 @@ define(["jquery", 'site_config', "../lib/Site"], function($, site_config, Site) 
 			paths : {},
 			other : {}
 		};
-			
+
 		$.each(obj, function (key, value) {
 			if((String(key).indexOf("url") >= 0 && key !== "url_suffix" && key !== "strict_urls") || key === "emoticon_path"){
 				data.urls[key] = value;

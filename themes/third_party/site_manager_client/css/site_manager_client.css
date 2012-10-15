@@ -374,6 +374,7 @@ p.error {
 /* Site Details */
 .columns.nav .left {
 	width: 20%;
+	padding-bottom:20px;
 }
 .columns.nav .right {
 	width:78%;
@@ -529,7 +530,7 @@ table.mainTable thead tr:first-child th {
 	padding:10px 0;
 	background: url(../images/loading.gif) no-repeat -100px center;
 }
-#syncWrapper.loading,
+
 #syncWrapper.initialLoad {
 	background-position: center 100px;
 }
@@ -577,6 +578,7 @@ table.mainTable thead tr:first-child th {
 	top: -15px;
 	display: block;
 	margin:0 auto;
+	max-width: 100%;
 }
 #syncWrapper .no-results {
 	display: none;
@@ -594,6 +596,7 @@ table.mainTable thead tr:first-child th {
 }
 #syncWrapper .gutter .gutter-header.double #sm-fieldgroup {
 	margin-top: 7px;
+
 }
 #sm-site1-body,
 #sm-site2-body {
@@ -610,8 +613,8 @@ table.mainTable thead tr:first-child th {
 	font-size: 1.4em;
 	margin-bottom:1px;
 	position: relative;
-
 }
+
 .sm-sync-block.blank {
 	background-color: transparent;
 }

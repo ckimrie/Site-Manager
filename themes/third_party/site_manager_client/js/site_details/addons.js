@@ -4,9 +4,11 @@ define(["jquery", 'site_config', "../lib/Site"], function($, site_config, Site) 
 
 
 	//Ping Site
-	site.ping();
+	site.ping().done(function(data) {
+		$(".app_version").text(data.app_version);
+	});
 
-	
+
 	site.addons().done(function(data) {
 		var table,
 			$native = $(".native"),
@@ -207,7 +209,7 @@ define(["jquery", 'site_config', "../lib/Site"], function($, site_config, Site) 
 			$(this).toggleClass("open").next().toggle();
 		});
 	});
-	
+
 
 
 	function emptyTable (table) {

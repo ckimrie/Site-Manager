@@ -28,7 +28,7 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 		this.site_2 = null;
 		this.site_2_node = $("#sm-site2-body");
 		this.gutter_node = $("#sm-gutter-body");
-		this.all_sites = [];
+		this.all_sites = {};
 
 		$("#sm-refresh").click(function(e) {
 			e.preventDefault();
@@ -53,7 +53,7 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 			s.ping().fail(function() {
 				there.site_loaded();
 			}).done(function(data) {
-				there.all_sites.push(s);
+				there.all_sites['s'+s.config.site_id] = s;
 			}).then(function() {
 				there.site_loaded();
 			});
@@ -196,15 +196,13 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 			var here = this;
 
 			if(this.site_1 && this.site_2) {
+
 				this.sync_type.removeAttr("disabled");
 
 				//Loading indicator
 				this.wrapper.addClass("loading");
 
 				//Clearout the current displayed items
-				this.site_1_node.empty();
-				this.site_2_node.empty();
-				this.gutter_node.empty();
 
 				this.sync = new SyncManager();
 				this.sync.add(this.site_1, this.site_1_node);
@@ -253,6 +251,9 @@ define(["jquery", 'site_configs', "../lib/Site", "../lib/SyncManager"], function
 				target_2 = this.site_2_node,
 				gutter  = this.gutter_node;
 
+			this.site_1_node.empty();
+			this.site_2_node.empty();
+			this.gutter_node.empty();
 
 			this.wrapper.removeClass("no-results");
 
