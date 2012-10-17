@@ -6,6 +6,8 @@ ExpressionEngine module that allows you to manage sites remotely as well as comp
 
 ## Installation
 
+Before installing the _Site Manager Client_ you will need to install the [RequireJS-for-EE](https://github.com/ckimrie/RequireJS-for-EE) extension.  The _Site Manager Server_ does not require RequireJS-for-EE.
+
 - Install the _Site Manager Client_ module in the site you wish to use as the central point to manage your sites.
 - Install the _Site Manager Server_ module in each site you wish to manage remotely.
 
