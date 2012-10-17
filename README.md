@@ -22,3 +22,7 @@ These are the following items that this module needs tested:
 
 This software is still in active development and is not fully compatible with all third party addons.  Please backup your database before performing any synchronisation operations.
 
+## License
+
+![Creative Commons License](http://i.creativecommons.org/l/by/3.0/88x31.png)
+This work is licensed under a [Creative Commons Attribution 3.0 Unported License](http://creativecommons.org/licenses/by/3.0/deed.en_US)
