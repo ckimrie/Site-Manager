@@ -22,8 +22,15 @@ These are the following items that this module needs tested:
 - SSL communication testing
 - Fieldtype testing (Particularly fields that store field settings in separate tables)
 
-## License
+## Project License
 
 ![Creative Commons License](http://i.creativecommons.org/l/by/3.0/88x31.png)
 
-This work is licensed under a [Creative Commons Attribution 3.0 Unported License](http://creativecommons.org/licenses/by/3.0/deed.en_US)
+This work is licensed under a [Creative Commons Attribution 3.0 Unported License](http://creativecommons.org/licenses/by/3.0/deed.en_US), however, this license does not apply to included libraries (see below) which may have different licenses.
+
+## Included Libraries & Licenses
+
+Site manager includes several libraries, each with its own license and development priorities:
+
+- [Channel Data](http://www.objectivehtml.com/libraries/channel_data) - [BSD 2-clause License](http://en.wikipedia.org/wiki/BSD_licenses#2-clause_license_.28.22Simplified_BSD_License.22_or_.22FreeBSD_License.22.29)
+- [Phpseclib](http://phpseclib.sourceforge.net) - [MIT License](http://en.wikipedia.org/wiki/MIT_License)
