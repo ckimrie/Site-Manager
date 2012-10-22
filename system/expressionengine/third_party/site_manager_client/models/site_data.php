@@ -2,8 +2,12 @@
 
 
 /**
-*
-*/
+ * Site Data Model
+ *
+ * Data model for interacting with site data stored within the EE DB
+ *
+ * @author  Christopher Imrie
+ */
 class Site_data extends CI_Model
 {
 	var $EE;
@@ -17,6 +21,10 @@ class Site_data extends CI_Model
 	//Static
 	static private $_instance;
 
+
+	/**
+	 * Constructor
+	 */
 	function __construct()
 	{
 		$this->EE =& get_instance();
@@ -29,7 +37,13 @@ class Site_data extends CI_Model
 	}
 
 
-
+	/**
+	 * Initialise Class
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return null
+	 */
 	public function init()
 	{
 		//Initialise
@@ -40,14 +54,27 @@ class Site_data extends CI_Model
 	}
 
 
-
+	/**
+	 * Get class instance
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return object
+	 */
 	static function get_instance()
 	{
 		return Site_data::$_instance;
 	}
 
 
-
+	/**
+	 * Create a new remote site
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  array       $post  Site settings
+	 * @return integer            Newly created site id
+	 */
 	public function newSite($post=array())
 	{
 		$c =& CI_Controller::get_instance();
@@ -78,7 +105,15 @@ class Site_data extends CI_Model
 	}
 
 
-
+	/**
+	 * Update a local site
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  integer      $site_id The ID of the site to be updated
+	 * @param  array       $post     Data to update the site with
+	 * @return integer               The ID of the site updated
+	 */
 	public function updateSite($site_id='', $post=array())
 	{
 		$c =& CI_Controller::get_instance();
@@ -108,6 +143,17 @@ class Site_data extends CI_Model
 	}
 
 
+	/**
+	 * Get all sites
+	 *
+	 * Instead of returning an array of sites, we return a SiteCollection
+	 * instance. This iterable class has various convenience methods
+	 * for working with multiple sites at a time.
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return object      SiteCollection instance
+	 */
 	public function get_all()
 	{
 		//Fetch installed sites
@@ -127,7 +173,14 @@ class Site_data extends CI_Model
 	}
 
 
-
+	/**
+	 * Get a single site
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  integer      $site_id
+	 * @return object                Site instance
+	 */
 	public function get($site_id)
 	{
 		$site = $this->_sites->get($site_id);
@@ -144,6 +197,14 @@ class Site_data extends CI_Model
 	}
 
 
+	/**
+	 * Delete a site
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  integer      $site_id
+	 * @return null
+	 */
 	public function delete_site($site_id='')
 	{
 		if(!$site_id) return;
@@ -153,17 +214,46 @@ class Site_data extends CI_Model
 	}
 
 
+	/**
+	 * Verify settings payload integrity
+	 *
+	 * Simply decodes the settings payload that has been provided and
+	 * checks that it decodes into an array (meaning it is not corrupt)
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  string      $str  Encoded settings payload
+	 * @return bool
+	 */
 	public function verify_settings_payload($str='')
 	{
 		$a = $this->decode_settings_payload($str);
 		return is_array($a) && count($a) > 0;
 	}
 
+
+	/**
+	 * Decode settings payload
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  string      $str  Encoded settings payload
+	 * @return mixed             Array if valid payload, FALSE if not
+	 */
 	public function decode_settings_payload($str='')
 	{
 		return @unserialize(base64_decode($str));
 	}
 
+
+	/**
+	 * Encode settings payload
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  array       $data Data to encode
+	 * @return string
+	 */
 	public function encode_settings_payload($data=array())
 	{
 		return base64_encode(serialize($data));
