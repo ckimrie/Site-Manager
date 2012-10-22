@@ -4,16 +4,21 @@
 /**
  * Site Manager CP Controller
  *
+ * Main EE CP Controller for Site Manager Module
+ *
  * @author  Christopher Imrie
  */
 class Site_manager_client_mcp
 {
+	//Config Vars
+	var $module_label 	= "Site Manager";
+	var $page_title 	= "Site Manager";
+
+	//Runtime Vars
 	var $EE;
 	var $ajax;
 	var $return_data;
-
-	var $module_label = "Site Manager";
-	var $page_title = "Site Manager";
+	var $payload_error;
 
 
 	/**
@@ -150,6 +155,10 @@ class Site_manager_client_mcp
 
 
 		foreach ($this->EE->input->post('sites', TRUE) as $key => $site) {
+
+			if(!$this->_validateSitePayload($site)) {
+				show_error("Invalid settings provided: " .$this->payload_error);
+			}
 
 			$data = array(
 				"site_id"					=> $site['site_id'],
@@ -321,23 +330,18 @@ class Site_manager_client_mcp
 	}
 
 
+
+	/**
+	 * Site Details - Update local settings
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @return null
+	 */
 	public function update_site_settings()
 	{
 		if(! $this->EE->input->post('site_id')) show_error("No site data recieved");
 
-		if(
-			! $this->EE->input->post('site_id') ||
-			! $this->EE->input->post('public_key') ||
-			! $this->EE->input->post('private_key') ||
-			! $this->EE->input->post('cp_url') ||
-			! $this->EE->input->post('site_name') ||
-			! $this->EE->input->post('base_url') ||
-			! $this->EE->input->post('user_id') ||
-			! $this->EE->input->post('channel_nomenclature') ||
-			! $this->EE->input->post('action_id')
-		) {
-			show_error("All fields are required");
-		}
 
 		$site_id = $this->EE->input->get("site_id");
 		$data = array(
@@ -353,6 +357,11 @@ class Site_manager_client_mcp
 			"action_id"					=> $this->EE->input->post('action_id')
 		);
 
+		//Validate that the updated fields are correct
+		if(!$this->_validateSitePayload($data)){
+			show_error("Invalid settings provided: " .$this->payload_error);
+		}
+
 		try {
 			$this->EE->site_data->updateSite($site_id, $data);
 		} catch (Exception $e) {
@@ -363,6 +372,8 @@ class Site_manager_client_mcp
 
 		redirectToMethod("site_details_settings", array("site_id" => $site_id, "update" => "success"));
 	}
+
+
 
 	/**
 	 * License and EE version review page
@@ -543,6 +554,93 @@ class Site_manager_client_mcp
 	public function _valid_settings($str='')
 	{
 		return $this->EE->site_data->verify_settings_payload($str);
+	}
+
+
+	/**
+	 * Validate Site Payload
+	 *
+	 * Verifies that all settings are present and of the correct type.
+	 *
+	 * @author Christopher Imrie
+	 *
+	 * @param  array       $site Decoded data containing settings from remote site
+	 * @return bool
+	 */
+	public function _validateSitePayload($site=array())
+	{
+		//All Present and accounted for?
+		$required = array(
+			"site_id",
+			"public_key",
+			"private_key",
+			"cp_url",
+			"site_name",
+			"base_url",
+		 /* "index_page", */
+			"user_id",
+		 /* "channel_nomenclature", */
+			"action_id"
+		);
+
+		foreach ($required as $key => $name) {
+			if( ! isset($site[$name])) {
+				$this->payload_error = $name . " field missing.";
+				return FALSE;
+			}
+
+			if( ! $site[$name]) {
+				$this->payload_error = $name . " field is empty.";
+				return FALSE;
+			}
+		}
+
+
+		//Encryption key lengths correct? (32)
+		if(strlen($site['public_key']) != 32) {
+			$this->payload_error = "Public encryption key must be 32 characters long";
+			return FALSE;
+		}
+		if(strlen($site['private_key']) != 32) {
+			$this->payload_error = "Private encryption key must be 32 characters long";
+			return FALSE;
+		}
+
+		//URLs being with http ??
+		if(strpos($site['base_url'], "http") !== 0) {
+			$this->payload_error = "Base URL must be valid URL that begins with 'http'";
+			return FALSE;
+		}
+
+		if(strpos($site['cp_url'], "http") !== 0) {
+			$this->payload_error = "CP URL must be valid URL that begins with 'http'";
+			return FALSE;
+		}
+
+
+		//
+		//Integer checks
+		//
+
+		//Site ID
+		if(!is_numeric($site['site_id'] )) {
+			$this->payload_error = "Site ID must be integer";
+			return FALSE;
+		}
+
+		//API Action ID
+		if(!is_numeric($site['site_id'] )) {
+			$this->payload_error = "API Action ID must be integer";
+			return FALSE;
+		}
+
+		//User ID
+		if(!is_numeric($site['site_id'] )) {
+			$this->payload_error = "User ID must be integer";
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 
