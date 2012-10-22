@@ -7,8 +7,8 @@ class Site_manager_client
 {
 
 	var $EE;
-	var $version	= 0.1;
-	
+	var $version	= 0.2;
+
 	function __construct()
 	{
 		$this->EE =& get_instance();

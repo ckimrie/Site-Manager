@@ -7,17 +7,17 @@ class Site_manager_server_upd
 {
 
 	var $EE;
-	var $version	= 0.1;
+	var $version	= 0.2;
 	var $db_name	= "site_manager_server_config";
 	var $module_name = "Site_manager_server";
 	var $action_name = "request";
-	
+
 	function __construct()
 	{
 
 		$this->EE =& get_instance();
 	}
-	
+
 	/**
 	 * Installer function
 	 *
@@ -25,7 +25,7 @@ class Site_manager_server_upd
 	 * @author Christopher Imrie
 	 **/
 	function install()
-	{		
+	{
 		$data = array(
 			'module_name'			=>	$this->module_name,
 			'module_version'		=>	$this->version,
@@ -66,7 +66,7 @@ class Site_manager_server_upd
 
 		return TRUE;
 	}
-	
+
 
 
 	/**
@@ -80,7 +80,7 @@ class Site_manager_server_upd
 
 		return TRUE;
 	}
-	
+
 	/**
 	 * Uninstalls the module
 	 *
@@ -88,17 +88,17 @@ class Site_manager_server_upd
 	 * @author Christopher Imrie
 	 **/
 	function uninstall()
-	{		
+	{
 		$this->EE->db->where('module_name', $this->module_name);
 		$this->EE->db->delete('modules');
 
 		$this->EE->db->where('class', $this->module_name);
 		$this->EE->db->delete('actions');
-		
+
 		$this->EE->load->dbforge();
 		$this->EE->dbforge->drop_table("site_manager_server_config");
 
 		return TRUE;
 	}
-	
+
 }
