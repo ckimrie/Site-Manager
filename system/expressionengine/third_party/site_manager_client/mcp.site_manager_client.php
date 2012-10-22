@@ -310,7 +310,6 @@ class Site_manager_client_mcp
 		//Page JS
 		Requirejs::load("third_party/site_manager_client/js/site_details/index");
 
-
 		$data = array();
 		$data['site'] = $this->EE->site_data->get($site_id);
 		$data['update'] = $this->EE->input->get("update");
