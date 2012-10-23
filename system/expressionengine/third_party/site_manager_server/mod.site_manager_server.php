@@ -88,6 +88,12 @@ class Site_manager_server
 
         $member = $q->row();
 
+        //Define these constants in case any extensions are listening for the login hooks (eg: Structure)
+        //Unfortunately we cant set the session ID at this point, so unless they're on the new hawtness EE login
+        //they may need to login again anyway...
+		define('BASE', $base = $this->EE->config->item("cp_url").'?S=0&amp;D=cp');
+		define('PATH_CP_THEME', PATH_THEMES.'cp_themes/');
+
         //Legacy EE
         if(!file_exists(APPPATH."libraries/Auth.php")){
         	$this->EE->load->library("session");
