@@ -38,6 +38,9 @@ class Site_manager_server
 			exit;
 		}
 
+		//Ok, from here on, we want errors to show so we can debug, so lets add our CORS header here
+		@header("Access-Control-Allow-Origin: *");
+
 		//Is there post data to decrypt?
 		if($this->EE->input->post("payload")) {
 			$data = decrypt_payload(base64_decode($this->EE->input->post("payload")), self::$private_key);
@@ -300,7 +303,6 @@ class Site_manager_server
 		$this->EE->load->library('javascript');
 		$this->EE->output->set_status_header($this->response_code);
 
-		@header("Access-Control-Allow-Origin: *");
 		@header('Content-Type: text/html');
 
 		$output = $this->EE->javascript->generate_json($data, TRUE);

@@ -533,11 +533,15 @@ class Local_data extends CI_model
 	{
 		global $_POST;
 
+		if(!$data) {
+			return $this->error("No data provided for channel creation");
+		}
+
 		//Load admon content controller
 		$this->EE->load->file(PATH_THIRD.$this->_module_name."/classes/mock_admin_content.php");
 
 		//Is there a field group?
-		if($data['field_group']) {
+		if(isset($data['field_group']) && $data['field_group'] != NULL) {
 
 			//Match fieldgroup ID.  If there is no fieldgroup, then we cannot proceed
 			$q = $this->EE->db->where("group_name", $data['field_group_name'])
@@ -593,7 +597,10 @@ class Local_data extends CI_model
 	{
 		$categories = array();
 
-		if(!$data) show_error("No data provided");
+		if(!$data) {
+			return $this->error("No data provided for category creation");
+		}
+
 
 		$this->EE->load->model("category_model");
 
@@ -669,8 +676,12 @@ class Local_data extends CI_model
 	 * @param  array      $data
 	 * @return array
 	 */
-	public function create_fieldgroup($data)
+	public function create_fieldgroup($data=array())
 	{
+		if(!$data) {
+			return $this->error("No data provided for fieldgroup creation");
+		}
+
 		//Load admon content controller
 		$this->EE->load->file(PATH_THIRD.$this->_module_name."/classes/mock_admin_content.php");
 
@@ -697,6 +708,14 @@ class Local_data extends CI_model
 	 */
 	public function create_field($group_id, $data=array())
 	{
+		if(!$group_id) {
+			return $this->error("Field group not specified");
+		}
+
+		if(!$data) {
+			return $this->error("No data provided for field creation");
+		}
+
 
 		//Load admon content controller
 		$this->EE->load->file(PATH_THIRD.$this->_module_name."/classes/mock_admin_content.php");

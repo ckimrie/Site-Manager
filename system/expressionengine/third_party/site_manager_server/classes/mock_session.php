@@ -10,5 +10,10 @@
 class Mock_session
 {
 	public function set_flashdata($a="", $b=""){}
-
+	public function userdata($key='')
+	{
+		if($key == "group_id") {
+			return 1;
+		}
+	}
 }
