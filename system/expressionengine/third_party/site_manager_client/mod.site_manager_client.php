@@ -7,7 +7,7 @@ class Site_manager_client
 {
 
 	var $EE;
-	var $version	= 0.2;
+	var $version	= "0.2.1";
 
 	function __construct()
 	{
