@@ -7,7 +7,7 @@ class Site_manager_server_upd
 {
 
 	var $EE;
-	var $version	= "0.2.1";
+	var $version	= "0.2.2";
 	var $db_name	= "site_manager_server_config";
 	var $module_name = "Site_manager_server";
 	var $action_name = "request";

@@ -7,7 +7,7 @@ class Site_manager_client_upd
 {
 
 	var $EE;
-	var $version		= "0.2.1";
+	var $version		= "0.2.2";
 	var $module_name 	= "Site_manager_client";
 	var $db_name		= "site_manager_sites";
 
