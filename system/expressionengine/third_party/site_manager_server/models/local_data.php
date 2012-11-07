@@ -538,7 +538,7 @@ class Local_data extends CI_model
 		}
 
 		//Load admon content controller
-		$this->EE->load->file(PATH_THIRD.strtolower($this->_module_name)."/classes/mock_admin_content.php");
+		$this->EE->load->file(PATH_THIRD.$this->_module_name."/classes/mock_admin_content.php");
 
 		//Is there a field group?
 		if(isset($data['field_group']) && $data['field_group'] != NULL) {
@@ -683,7 +683,7 @@ class Local_data extends CI_model
 		}
 
 		//Load admon content controller
-		$this->EE->load->file(PATH_THIRD.strtolower($this->_module_name)."/classes/mock_admin_content.php");
+		$this->EE->load->file(PATH_THIRD.$this->_module_name."/classes/mock_admin_content.php");
 
 		if(!isset($data['group_name'])) show_error("Group name must be specified");
 
@@ -718,7 +718,7 @@ class Local_data extends CI_model
 
 
 		//Load admon content controller
-		$this->EE->load->file(PATH_THIRD.strtolower($this->_module_name)."/classes/mock_admin_content.php");
+		$this->EE->load->file(PATH_THIRD.$this->_module_name."/classes/mock_admin_content.php");
 
 
 		$extra = array();

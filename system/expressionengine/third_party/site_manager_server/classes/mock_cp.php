@@ -1,7 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 $e =& get_instance();
-$e->load->file(APPPATH."libraries/Cp.php");
+$e->load->file(APPPATH."libraries/cp.php");
 
 /**
 * Mock CP Library
