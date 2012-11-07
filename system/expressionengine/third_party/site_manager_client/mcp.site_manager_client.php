@@ -84,11 +84,8 @@ class Site_manager_client_mcp
 	public function index()
 	{
 		//Page JS
-		// Requirejs::load("../assets/addons/site_manager_client/js/index/index");
-	
-		// http://lotusgrill.dev/assets/addons/site_manager_client/js/index/index.js
-		
 		$this->EE->theme_loader->javascript('index/index');
+		
 		
 		$data['sites'] = $this->EE->site_data->get_all();
 
@@ -217,7 +214,8 @@ class Site_manager_client_mcp
 		if(!$data['site']) show_404();
 
 		//Page JS
-		Requirejs::load("third_party/site_manager_client/js/site_details/index");
+		$this->EE->theme_loader->javascript('site_details/index');
+
 
 		$this->page_title = $data['site']->name();
 
@@ -238,7 +236,7 @@ class Site_manager_client_mcp
 		$site_id = $this->EE->input->get("site_id");
 
 		//Page JS
-		Requirejs::load("third_party/site_manager_client/js/site_details/config");
+		$this->EE->theme_loader->javascript('site_details/config');
 
 
 		$data = array();
@@ -265,7 +263,7 @@ class Site_manager_client_mcp
 		$site_id = $this->EE->input->get("site_id");
 
 		//Page JS
-		Requirejs::load("third_party/site_manager_client/js/site_details/channels");
+		$this->EE->theme_loader->javascript('site_details/channels');
 
 
 		$data = array();
@@ -291,7 +289,7 @@ class Site_manager_client_mcp
 		$site_id = $this->EE->input->get("site_id");
 
 		//Page JS
-		Requirejs::load("third_party/site_manager_client/js/site_details/addons");
+		$this->EE->theme_loader->javascript('site_details/addons');
 
 
 		$data = array();
@@ -318,7 +316,8 @@ class Site_manager_client_mcp
 		$site_id = $this->EE->input->get("site_id");
 
 		//Page JS
-		Requirejs::load("third_party/site_manager_client/js/site_details/index");
+		$this->EE->theme_loader->javascript('site_details/index');
+
 
 		$data = array();
 		$data['site'] = $this->EE->site_data->get($site_id);
@@ -394,7 +393,7 @@ class Site_manager_client_mcp
 	public function license_review()
 	{
 		//Page JS
-		Requirejs::load("third_party/site_manager_client/js/index/license_review");
+		$this->EE->theme_loader->javascript('index/license_review');
 
 
 		$data['sites'] = $this->EE->site_data->get_all();
@@ -416,8 +415,8 @@ class Site_manager_client_mcp
 	public function sync()
 	{
 		//Page JS
-		Requirejs::load("third_party/site_manager_client/js/sync/index");
-
+		$this->EE->theme_loader->javascript('sync/index');
+		
 
 		$data['sites'] = $this->EE->site_data->get_all();
 
