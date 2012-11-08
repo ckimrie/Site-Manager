@@ -30,6 +30,16 @@ class Site_manager_client_mcp
 	{
 		$this->EE =& get_instance();
 
+		// Load the Theme Loader class only if it doesn't already exist.
+		if(!isset($this->EE->theme_loader))
+		{
+			$this->EE->load->library('theme_loader');
+		}
+		
+		// Define your module name so the file paths will be correct
+		$this->EE->theme_loader->module_name  = 'site_manager_client';
+		$this->EE->theme_loader->js_directory = 'js';
+				
 		$this->EE->load->file(PATH_THIRD."site_manager_client/ajax.site_manager_client.php");
 		$this->ajax = new Site_manager_client_ajax();
 
@@ -45,16 +55,12 @@ class Site_manager_client_mcp
 		}
 
 
-		//CSS
-		$this->EE->cp->add_to_head("<link href='".$this->EE->config->item("theme_folder_url")."third_party/site_manager_client/css/site_manager_client.css' rel='stylesheet'/>");
-
-
-
+		$this->EE->theme_loader->css('site_manager_client');
+		
+		
 		//PHP Resources & view fragments
 		$this->EE->load->model("site_data");
 		$this->EE->load->helper("navigation");
-
-
 	}
 
 
@@ -78,8 +84,9 @@ class Site_manager_client_mcp
 	public function index()
 	{
 		//Page JS
-		Requirejs::load("third_party/site_manager_client/js/index/index");
-
+		$this->EE->theme_loader->javascript('index/index');
+		
+		
 		$data['sites'] = $this->EE->site_data->get_all();
 
 		return $this->view("index/index", $data);
@@ -207,7 +214,8 @@ class Site_manager_client_mcp
 		if(!$data['site']) show_404();
 
 		//Page JS
-		Requirejs::load("third_party/site_manager_client/js/site_details/index");
+		$this->EE->theme_loader->javascript('site_details/index');
+
 
 		$this->page_title = $data['site']->name();
 
@@ -228,7 +236,7 @@ class Site_manager_client_mcp
 		$site_id = $this->EE->input->get("site_id");
 
 		//Page JS
-		Requirejs::load("third_party/site_manager_client/js/site_details/config");
+		$this->EE->theme_loader->javascript('site_details/config');
 
 
 		$data = array();
@@ -255,7 +263,7 @@ class Site_manager_client_mcp
 		$site_id = $this->EE->input->get("site_id");
 
 		//Page JS
-		Requirejs::load("third_party/site_manager_client/js/site_details/channels");
+		$this->EE->theme_loader->javascript('site_details/channels');
 
 
 		$data = array();
@@ -281,7 +289,7 @@ class Site_manager_client_mcp
 		$site_id = $this->EE->input->get("site_id");
 
 		//Page JS
-		Requirejs::load("third_party/site_manager_client/js/site_details/addons");
+		$this->EE->theme_loader->javascript('site_details/addons');
 
 
 		$data = array();
@@ -308,7 +316,8 @@ class Site_manager_client_mcp
 		$site_id = $this->EE->input->get("site_id");
 
 		//Page JS
-		Requirejs::load("third_party/site_manager_client/js/site_details/index");
+		$this->EE->theme_loader->javascript('site_details/index');
+
 
 		$data = array();
 		$data['site'] = $this->EE->site_data->get($site_id);
@@ -384,7 +393,7 @@ class Site_manager_client_mcp
 	public function license_review()
 	{
 		//Page JS
-		Requirejs::load("third_party/site_manager_client/js/index/license_review");
+		$this->EE->theme_loader->javascript('index/license_review');
 
 
 		$data['sites'] = $this->EE->site_data->get_all();
@@ -406,8 +415,8 @@ class Site_manager_client_mcp
 	public function sync()
 	{
 		//Page JS
-		Requirejs::load("third_party/site_manager_client/js/sync/index");
-
+		$this->EE->theme_loader->javascript('sync/index');
+		
 
 		$data['sites'] = $this->EE->site_data->get_all();
 

@@ -7,9 +7,10 @@ class Site_manager_server
 {
 
 	var $EE;
-	var $version	= "0.2.2";
 
+	var $version	= "0.2.3";
 	var $response_code = 200;
+
 	static $private_key;
 	static $public_key;
 
