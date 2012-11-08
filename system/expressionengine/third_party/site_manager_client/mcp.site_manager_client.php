@@ -30,20 +30,6 @@ class Site_manager_client_mcp
 	{
 		$this->EE =& get_instance();
 
-		// Load the Theme Loader class only if it doesn't already exist.
-		if(!isset($this->EE->theme_loader))
-		{
-			$this->EE->load->library('theme_loader');
-		}
-		
-		// Define your module name so the file paths will be correct
-		$this->EE->theme_loader->module_name  = 'site_manager_client';
-		$this->EE->theme_loader->js_directory = 'js';
-				
-		$this->EE->load->file(PATH_THIRD."site_manager_client/ajax.site_manager_client.php");
-		$this->ajax = new Site_manager_client_ajax();
-
-
 		//Must be super admin to login (Recommended by EL)
 		if($this->EE->session->userdata('group_id') == 2) {
 			show_error("Site Manager can only be accessed by Super Admins.");
@@ -55,9 +41,25 @@ class Site_manager_client_mcp
 		}
 
 
+		//Site manager now depends on Theme loader, which is included in RequireJS-for-EE 1.4
+		//Thankfully this version also includes the 'version' property, so we'll check that
+		if (!property_exists($this->EE->requirejs, "version") || $this->EE->requirejs->version < "1.4") {
+			show_error("The Site Manager module needs at least version 1.4 of <a href='https://github.com/ckimrie/RequireJS-for-EE'>RequireJS-for-EE</a>.  Please update RequireJS-for-EE to the latest version and try again.", 500, "Update Required");
+		}
+
+
+
+		// Define your module name so the file paths will be correct
+		$this->EE->theme_loader->module_name  = 'site_manager_client';
+		$this->EE->theme_loader->js_directory = 'js';
+
+		$this->EE->load->file(PATH_THIRD."site_manager_client/ajax.site_manager_client.php");
+		$this->ajax = new Site_manager_client_ajax();
+
+
 		$this->EE->theme_loader->css('site_manager_client');
-		
-		
+
+
 		//PHP Resources & view fragments
 		$this->EE->load->model("site_data");
 		$this->EE->load->helper("navigation");
@@ -85,8 +87,8 @@ class Site_manager_client_mcp
 	{
 		//Page JS
 		$this->EE->theme_loader->javascript('index/index');
-		
-		
+
+
 		$data['sites'] = $this->EE->site_data->get_all();
 
 		return $this->view("index/index", $data);
@@ -416,7 +418,7 @@ class Site_manager_client_mcp
 	{
 		//Page JS
 		$this->EE->theme_loader->javascript('sync/index');
-		
+
 
 		$data['sites'] = $this->EE->site_data->get_all();
 
